@@ -64,13 +64,13 @@ function HeroSection() {
         >
           <button
             onClick={() => (window.location.href = "/menu")}
-            className="btn-primary !text-sm md:text-lg !px-5 !py-3 !md:px-8 md:py-4 transform hover:scale-105 transition-all duration-300 cursor-pointer"
+            className="btn-primary !text-sm md:!text-lg !px-5 !py-3 md:!px-8 md:!py-4 transform hover:scale-105 transition-all duration-300 cursor-pointer"
           >
             Order Now
           </button>
           <button
             onClick={() => (window.location.href = "/about")}
-            className="bg-white/10 backdrop-blur-md text-white border-2 border-white/30 !px-3 !py-3 !md:px-8 md:py-4 rounded-lg font-medium !text-sm md:text-lg hover:bg-white/20 transition-all duration-300 cursor-pointer"
+            className="bg-white/10 backdrop-blur-md text-white border-2 border-white/30 !px-3 !py-3 md:!px-8 md:!py-4 rounded-lg font-medium !text-sm md:!text-lg hover:bg-white/20 transition-all duration-300 cursor-pointer"
           >
             Our Story
           </button>
