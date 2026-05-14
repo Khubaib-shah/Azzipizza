@@ -82,7 +82,7 @@ function Header() {
   return (
     <>
       <header
-        className={`sticky top-0 z-50 transition-[background-color,box-shadow,padding] duration-300 h-20 flex items-center ${scrolled
+        className={`sticky top-0 z-50 transition-[background-color,box-shadow,padding] duration-300 h-12  md:h-20 flex items-center ${scrolled
           ? "bg-white shadow-sm"
           : "bg-red-600 shadow-sm"
           }`}
@@ -91,7 +91,7 @@ function Header() {
           {/* Logo */}
           <Link
             to="/"
-            className={`flex items-center gap-3 transition-transform hover:scale-105 h-14`}
+            className={`flex items-center gap-3 transition-transform hover:scale-105 h-10 md:h-14`}
           >
             <img
               src={logo}
@@ -132,7 +132,7 @@ function Header() {
           </div>
 
           {/* Cart and Menu */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
             {/* Cart */}
             <Link
               to="/cart"
@@ -145,7 +145,7 @@ function Header() {
                 : "hover:bg-white/10"
                 }`}>
                 <AiOutlineShoppingCart
-                  className={`text-[28px] transition-all duration-300 ${isCartHovered
+                  className={`text-[22px] md:text-[28px] transition-all duration-300 ${isCartHovered
                     ? "text-amber-500 scale-110"
                     : scrolled
                       ? "text-red-600"
@@ -153,7 +153,7 @@ function Header() {
                     }`}
                 />
                 {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-linear-to-r from-amber-500 to-amber-600 text-white text-xs w-6 h-6 flex items-center justify-center rounded-full font-bold shadow-lg animate-bounce">
+                  <span className="absolute -top-px -right-px md:-top-1 md:-right-1  bg-linear-to-r from-amber-500 to-amber-600 text-white text-xs w-4 h-4 md:w-6 md:h-6 flex items-center justify-center rounded-full font-bold shadow-lg animate-bounce">
                     {cartCount}
                   </span>
                 )}
@@ -171,7 +171,7 @@ function Header() {
                 : "hover:bg-white/10"
                 }`}>
                 <User
-                  className={`size-7 transition-all duration-300 ${scrolled
+                  className={`text-[22px] md:size-7 transition-all duration-300 ${scrolled
                     ? "text-red-600"
                     : "text-white"
                     } hover:text-amber-500`}
@@ -192,7 +192,7 @@ function Header() {
                     : "text-white hover:bg-white/10"
                     }`}
                 >
-                  <MdOutlineMenu className="text-[28px]" />
+                  <MdOutlineMenu className="text-[22px] md:text-[28px]" />
                 </div>
               </Button>
             </div>
@@ -201,8 +201,8 @@ function Header() {
 
         {/* Promotional Banner */}
         {!scrolled && (
-          <div className="absolute top-18 left-1/2 w-full transform -translate-x-1/2 bg-amber-400 text-center py-1 mt-2 animate-slide-down">
-            <p className="text-sm font-semibold text-gray-800">
+          <div className="absolute top-10 md:top-18 left-1/2 w-full transform -translate-x-1/2 bg-amber-400 text-center py-1 mt-2 animate-slide-down">
+            <p className="text-[10px] md:text-sm font-semibold text-gray-800">
               Free Delivery on every Order
             </p>
           </div>

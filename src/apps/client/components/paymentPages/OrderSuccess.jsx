@@ -29,6 +29,7 @@ const OrderSuccess = () => {
       setCleared(true);
       setLoading(false);
       clearCart();
+      localStorage.setItem("showInstallPromptAfterOrder", "true");
     } else if (!orderId) {
       setLoading(false);
     }

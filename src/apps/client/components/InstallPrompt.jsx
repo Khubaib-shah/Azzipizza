@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLocation } from "react-router-dom";
 
 const DISMISS_KEY = "azzipizza-install-dismissed";
 const DISMISS_DURATION_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -21,13 +22,26 @@ export default function InstallPrompt() {
     const handler = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
-      // Small delay so the page loads first
-      setTimeout(() => setShowPrompt(true), 2500);
     };
 
     window.addEventListener("beforeinstallprompt", handler);
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname === "/") {
+      if (localStorage.getItem("showInstallPromptAfterOrder") === "true") {
+        if (deferredPrompt) {
+          setTimeout(() => {
+            setShowPrompt(true);
+            localStorage.removeItem("showInstallPromptAfterOrder");
+          }, 1500);
+        }
+      }
+    }
+  }, [location.pathname, deferredPrompt]);
 
   const handleInstall = useCallback(async () => {
     if (!deferredPrompt) return;

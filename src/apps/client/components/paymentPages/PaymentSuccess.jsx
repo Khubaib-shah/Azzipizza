@@ -53,6 +53,7 @@ const PaymentSuccess = () => {
           }
 
           clearCart();
+          localStorage.setItem("showInstallPromptAfterOrder", "true");
           setSuccess(true);
         } else {
           console.error("Payment failed", res.data);
