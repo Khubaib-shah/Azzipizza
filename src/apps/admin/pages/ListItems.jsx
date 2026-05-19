@@ -2,6 +2,8 @@ import React, { useEffect, useState, useCallback } from "react";
 import { menuService } from "@shared/services";
 import { Trash2, Search, Filter, AlertCircle, Edit, Edit3, Loader2 } from "lucide-react";
 import { Input } from "@shared/components/ui/input";
+import { FaStar } from "react-icons/fa";
+import { getOptimizedImageUrl } from "@shared/utils/cloudinary";
 import {
   Select,
   SelectContent,
@@ -106,6 +108,12 @@ const ListItems = () => {
       formData.append("discount", parseFloat(itemToEdit.discount) || 0);
       formData.append("category", itemToEdit.category);
       formData.append("ingredients", JSON.stringify(itemToEdit.ingredients));
+      formData.append("showInSpecialOffers", itemToEdit.showInSpecialOffers || false);
+      formData.append("showInChefsSpecials", itemToEdit.showInChefsSpecials || false);
+      formData.append("showInWeeklySpecials", itemToEdit.showInWeeklySpecials || false);
+      formData.append("specialOffersOrder", parseInt(itemToEdit.specialOffersOrder) || 0);
+      formData.append("chefsSpecialsOrder", parseInt(itemToEdit.chefsSpecialsOrder) || 0);
+      formData.append("weeklySpecialsOrder", parseInt(itemToEdit.weeklySpecialsOrder) || 0);
 
       if (itemToEdit.image && typeof itemToEdit.image !== "string") {
         formData.append("image", itemToEdit.image);
@@ -210,72 +218,94 @@ const ListItems = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.9 }}
                 >
-                  <Card
-                    className="group border-none shadow-premium bg-white rounded-4xl overflow-hidden hover-lift transition-all duration-500"
+                  <div
+                    className="group relative bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col h-full transform-gpu hover:-translate-y-1 will-change-transform"
+                    style={{ contain: "layout" }}
                   >
-                    <div className="relative h-72 overflow-hidden">
-                      <div className="absolute top-4 right-4 z-20">
+                    {/* Badges */}
+                    <div className="absolute top-2 left-2 z-10 flex flex-col gap-1.5">
+                      {item.discount > 0 && (
+                        <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                          -{item.discount}%
+                        </span>
+                      )}
+                      {item.showInChefsSpecials && (
+                        <span className="bg-amber-400 text-black text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1">
+                          <FaStar size={8} /> Special
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Image Container */}
+                    <div className="relative aspect-[4/3] overflow-hidden bg-gray-50">
+                      <img
+                        loading="lazy"
+                        decoding="async"
+                        src={getOptimizedImageUrl(item.image, 400)}
+                        alt={item.name}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+
+                      {/* Quick Actions Overlay */}
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
                         <button
+                          className="bg-white text-gray-800 text-xs font-bold px-4 py-2 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 hover:bg-blue-600 hover:text-white flex items-center gap-1.5 cursor-pointer"
                           onClick={() => {
                             setItemToEdit(item);
                             setEditDialogOpen(true);
                           }}
-                          className="bg-white/80 backdrop-blur-xl p-3 rounded-2xl border border-white/50 text-slate-700 hover:bg-white hover:text-blue-600 shadow-xl transition-all cursor-pointer"
-                          title="Change Photo"
                         >
-                          <Edit3 className="size-5" />
+                          <Edit3 className="size-3.5" /> Edit
                         </button>
-                      </div>
-
-                      <img
-                        src={item.image || "/placeholder.svg"}
-                        alt={item.name}
-                        className="w-full h-full object-cover grayscale-20 group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110"
-                      />
-
-                      <div className="absolute top-4 left-4">
-                        <span className="bg-slate-950/80 backdrop-blur-md px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] text-white border border-white/10">
-                          {item.category}
-                        </span>
-                      </div>
-
-                      <div className="absolute inset-0 bg-linear-to-t from-slate-950/90 via-slate-950/20 to-transparent opacity-60"></div>
-
-                      <div className="absolute bottom-5 left-5 bg-white text-slate-950 px-5 py-2.5 rounded-[1.25rem] shadow-2xl">
-                        <span className="text-xs font-black mr-0.5 opacity-40 italic">€</span>
-                        <span className="text-2xl font-serif font-black italic tracking-tighter">
-                          {parseFloat(item.price).toFixed(2)}
-                        </span>
-                      </div>
-                    </div>
-
-                    <CardContent className="p-8 space-y-4">
-                      <div>
-                        <h3 className="text-xl font-serif font-black text-slate-900 mb-2 truncate">
-                          {item.name}
-                        </h3>
-                        <p className="text-[13px] text-slate-500 font-medium leading-relaxed line-clamp-2 h-10">
-                          {item.description}
-                        </p>
-                      </div>
-
-                      <div className="pt-4 flex items-center justify-between border-t border-slate-50/80">
-                        <div className="flex items-center gap-2">
-                          <div className="h-2 w-2 rounded-full bg-emerald-400"></div>
-                          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Available</span>
-                        </div>
                         <button
+                          className="bg-red-600 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 hover:bg-red-700 flex items-center gap-1.5 cursor-pointer"
                           onClick={() => {
                             setItemToDelete(item);
                             setDeleteDialogOpen(true);
                           }}
-                          className="text-[10px] font-black uppercase tracking-widest text-red-300 hover:text-red-500 transition-colors cursor-pointer"
                         >
-                          Remove
+                          <Trash2 className="size-3.5" /> Delete
                         </button>
                       </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+
+                    {/* Content */}
+                    <div className="p-3 flex flex-col flex-grow">
+                      <div className="flex justify-between items-start mb-1">
+                        <h3 className="font-bold text-gray-800 text-sm leading-tight line-clamp-1 group-hover:text-blue-600 transition-colors capitalize">
+                          {item.name}
+                        </h3>
+                        <div className="flex items-center gap-1 text-[10px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">
+                          <FaStar className="text-amber-400" />
+                          <span>{item.rating || 4.5}</span>
+                        </div>
+                      </div>
+
+                      <p className="text-[11px] text-gray-500 line-clamp-2 mb-3 leading-relaxed flex-grow">
+                        {item.description}
+                      </p>
+
+                      <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-50">
+                        <div className="flex flex-col">
+                          {item.discount > 0 && (
+                            <span className="text-[10px] text-gray-400 line-through">
+                              €{parseFloat(item.price).toFixed(2)}
+                            </span>
+                          )}
+                          <span className="font-bold text-base text-red-600">
+                            €{(item.price - (item.price * (item.discount || 0)) / 100).toFixed(2)}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-1">
+                          <div className={`h-1.5 w-1.5 rounded-full ${item.available ? "bg-emerald-400" : "bg-red-400"}`}></div>
+                          <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                            {item.available ? "Active" : "Hidden"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </motion.div>
               ))}
             </motion.div>

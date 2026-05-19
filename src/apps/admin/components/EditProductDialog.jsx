@@ -1,15 +1,8 @@
 import React from "react";
 import { Textarea } from "@shared/components/ui/textarea";
-import { X, Upload } from "lucide-react";
+import { X, Upload, Pencil, Trash2, Plus, Save } from "lucide-react";
 import { Button } from "@shared/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@shared/components/ui/dialog";
+import Modal from "@shared/components/ui/Modal";
 import { Input } from "@shared/components/ui/input";
 import {
   Select,
@@ -36,14 +29,20 @@ const EditProductDialog = ({
   loading,
 }) => {
   return (
-    <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-      <DialogContent className="max-w-2xl max-h-96 overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-xl">Edit Menu Item</DialogTitle>
-          <DialogDescription>
+    <Modal
+      isOpen={editDialogOpen}
+      onClose={() => setEditDialogOpen(false)}
+      className="max-w-2xl"
+    >
+      <div className="p-3 md:p-8 space-y-6">
+        <div>
+          <h2 className="text-2xl font-serif font-black text-slate-900 mb-1">
+            Edit Menu Item
+          </h2>
+          <p className="text-sm text-slate-400 font-medium leading-relaxed">
             Update the details of this menu item
-          </DialogDescription>
-        </DialogHeader>
+          </p>
+        </div>
 
         <form onSubmit={handleEditSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -153,12 +152,13 @@ const EditProductDialog = ({
                     onClick={handleAddIngredient}
                     variant="outline"
                     size="sm"
-                    className={
+                    className={`cursor-pointer font-bold flex items-center justify-center gap-1.5 px-3 sm:px-4 ${
                       newIngredient && newIngredientPrice && "cursor-pointer"
-                    }
+                    }`}
                     disabled={!newIngredient || !newIngredientPrice}
                   >
-                    Add
+                    <Plus className="h-4 w-4" />
+                    <span className="hidden sm:inline">Add</span>
                   </Button>
                 </div>
 
@@ -205,29 +205,33 @@ const EditProductDialog = ({
                         alt="Preview"
                         className="mx-auto h-40 object-contain rounded"
                       />
-                      <div className="flex gap-2 flex-col">
+                      <div className="flex flex-row gap-2">
                         <Button
                           type="button"
                           variant="outline"
                           size="sm"
-                          className="cursor-pointer w-full"
+                          className="cursor-pointer flex-1 flex items-center justify-center gap-1.5"
                           onClick={() =>
                             document.getElementById("editImageInput").click()
                           }
                         >
-                          Change Image
+                          <Pencil className="h-4 w-4" />
+                          <span className="hidden sm:inline">Change Image</span>
+                          <span className="inline sm:hidden">Change</span>
                         </Button>
                         <Button
                           type="button"
                           variant="outline"
                           size="sm"
-                          className="cursor-pointer w-full text-red-600 border-red-200 hover:bg-red-50"
+                          className="cursor-pointer flex-1 flex items-center justify-center gap-1.5 text-red-600 border-red-200 hover:bg-red-50"
                           onClick={() => {
                             setImagePreview(null);
                             handleEditChange("image", null);
                           }}
                         >
-                          Remove
+                          <Trash2 className="h-4 w-4" />
+                          <span className="hidden sm:inline">Remove Image</span>
+                          <span className="inline sm:hidden">Remove</span>
                         </Button>
                       </div>
                       <Input
@@ -250,12 +254,13 @@ const EditProductDialog = ({
                         type="button"
                         variant="outline"
                         size="sm"
-                        className="w-full cursor-pointer"
+                        className="w-full cursor-pointer flex items-center justify-center gap-1.5"
                         onClick={() =>
                           document.getElementById("editImageInput").click()
                         }
                       >
-                        Select Image
+                        <Upload className="h-4 w-4" />
+                        <span>Select Image</span>
                       </Button>
                       <Input
                         id="editImageInput"
@@ -271,7 +276,126 @@ const EditProductDialog = ({
             </div>
           </div>
 
-          <DialogFooter>
+          {/* Specials & Sorting Section */}
+          <div className="border-t border-slate-100 pt-4 space-y-4">
+            <h4 className="text-sm font-bold text-slate-800 uppercase tracking-wider text-[10px]">
+              Specials & Sorting Controls
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Special Offers */}
+              <div className="space-y-3 p-3 bg-slate-50 rounded-2xl border border-slate-100">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-700">
+                    Special Offers
+                  </span>
+                  <input
+                    type="checkbox"
+                    checked={itemToEdit.showInSpecialOffers || false}
+                    onChange={(e) =>
+                      handleEditChange("showInSpecialOffers", e.target.checked)
+                    }
+                    className="w-4 h-4 accent-red-600 rounded cursor-pointer"
+                  />
+                </div>
+                {itemToEdit.showInSpecialOffers && (
+                  <div className="space-y-1">
+                    <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
+                      Sort Order
+                    </label>
+                    <Input
+                      type="number"
+                      value={
+                        itemToEdit.specialOffersOrder !== undefined
+                          ? itemToEdit.specialOffersOrder
+                          : "0"
+                      }
+                      onChange={(e) =>
+                        handleEditChange("specialOffersOrder", e.target.value)
+                      }
+                      placeholder="0"
+                      className="h-8 px-2 text-xs rounded-lg border-slate-100 bg-white focus-visible:ring-red-600/10 font-bold text-slate-800"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Chef's Specials */}
+              <div className="space-y-3 p-3 bg-slate-50 rounded-2xl border border-slate-100">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-700">
+                    Chef's Specials
+                  </span>
+                  <input
+                    type="checkbox"
+                    checked={itemToEdit.showInChefsSpecials || false}
+                    onChange={(e) =>
+                      handleEditChange("showInChefsSpecials", e.target.checked)
+                    }
+                    className="w-4 h-4 accent-red-600 rounded cursor-pointer"
+                  />
+                </div>
+                {itemToEdit.showInChefsSpecials && (
+                  <div className="space-y-1">
+                    <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
+                      Sort Order
+                    </label>
+                    <Input
+                      type="number"
+                      value={
+                        itemToEdit.chefsSpecialsOrder !== undefined
+                          ? itemToEdit.chefsSpecialsOrder
+                          : "0"
+                      }
+                      onChange={(e) =>
+                        handleEditChange("chefsSpecialsOrder", e.target.value)
+                      }
+                      placeholder="0"
+                      className="h-8 px-2 text-xs rounded-lg border-slate-100 bg-white focus-visible:ring-red-600/10 font-bold text-slate-800"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Weekly Specials */}
+              <div className="space-y-3 p-3 bg-slate-50 rounded-2xl border border-slate-100">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-700">
+                    Weekly Specials
+                  </span>
+                  <input
+                    type="checkbox"
+                    checked={itemToEdit.showInWeeklySpecials || false}
+                    onChange={(e) =>
+                      handleEditChange("showInWeeklySpecials", e.target.checked)
+                    }
+                    className="w-4 h-4 accent-red-600 rounded cursor-pointer"
+                  />
+                </div>
+                {itemToEdit.showInWeeklySpecials && (
+                  <div className="space-y-1">
+                    <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
+                      Sort Order
+                    </label>
+                    <Input
+                      type="number"
+                      value={
+                        itemToEdit.weeklySpecialsOrder !== undefined
+                          ? itemToEdit.weeklySpecialsOrder
+                          : "0"
+                      }
+                      onChange={(e) =>
+                        handleEditChange("weeklySpecialsOrder", e.target.value)
+                      }
+                      placeholder="0"
+                      className="h-8 px-2 text-xs rounded-lg border-slate-100 bg-white focus-visible:ring-red-600/10 font-bold text-slate-800"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-end gap-3 pt-6 border-t border-slate-100/50">
             <Button
               variant="outline"
               type="button"
@@ -279,17 +403,47 @@ const EditProductDialog = ({
                 setEditDialogOpen(false);
                 setImagePreview(null);
               }}
-              className="cursor-pointer"
+              className="cursor-pointer flex items-center gap-1.5 px-3 sm:px-4"
             >
-              Cancel
+              <X className="h-4 w-4" />
+              <span className="hidden sm:inline">Cancel</span>
             </Button>
-            <Button type="submit" className="cursor-pointer" disabled={loading}>
-              {loading ? "Saving..." : "Save Changes"}
+            <Button
+              type="submit"
+              className="cursor-pointer flex items-center gap-1.5 px-3 sm:px-4"
+              disabled={loading}
+            >
+              {loading ? (
+                <svg
+                  className="animate-spin h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v8z"
+                  ></path>
+                </svg>
+              ) : (
+                <Save className="h-4 w-4" />
+              )}
+              <span className="hidden sm:inline">{loading ? "Saving..." : "Save Changes"}</span>
+              <span className="inline sm:hidden">{loading ? "..." : "Save"}</span>
             </Button>
-          </DialogFooter>
+          </div>
         </form>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </Modal>
   );
 };
 

@@ -94,7 +94,10 @@ function Menu() {
 
   // Separate offers
   const offerItems = useMemo(() => {
-    return items?.filter((item) => item.discount && item.discount > 0) || [];
+    if (!items) return [];
+    return [...items]
+      .filter((item) => item.showInWeeklySpecials)
+      .sort((a, b) => (a.weeklySpecialsOrder || 0) - (b.weeklySpecialsOrder || 0));
   }, [items]);
 
   // Group by category (Optimized single-pass grouping)

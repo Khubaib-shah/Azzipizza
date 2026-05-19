@@ -15,15 +15,17 @@ function Landing() {
 
   useEffect(() => {
     if (items && items.length > 0) {
-      // Get items with discounts for special offers
+      // Get items marked for special offers, sorted by specialOffersOrder ascending
       const offers = items
-        .filter((item) => item.discount && item.discount > 0)
+        .filter((item) => item.showInSpecialOffers)
+        .sort((a, b) => (a.specialOffersOrder || 0) - (b.specialOffersOrder || 0))
         .slice(0, 6);
       setSpecialOffers(offers);
 
-      // Get chef's special items (pizze rosse or items marked as special)
+      // Get chef's special items, sorted by chefsSpecialsOrder ascending
       const specials = items
-        .filter((item) => item.category === "pizze rosse" || item.isChefSpecial)
+        .filter((item) => item.showInChefsSpecials)
+        .sort((a, b) => (a.chefsSpecialsOrder || 0) - (b.chefsSpecialsOrder || 0))
         .slice(0, 4);
       setFeaturedItems(specials);
     }

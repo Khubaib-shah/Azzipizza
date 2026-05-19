@@ -58,7 +58,7 @@ const OrderSideBar = React.memo(
 
       try {
         const blob = await pdf(
-          <ReceiptDocument order={selectedOrder} />
+          <ReceiptDocument order={selectedOrder} />,
         ).toBlob();
         const blobUrl = URL.createObjectURL(blob);
 
@@ -97,11 +97,16 @@ const OrderSideBar = React.memo(
 
     const getStatusStyles = (status) => {
       switch (status) {
-        case "Delivered": return "bg-emerald-50 text-emerald-700 border-emerald-100";
-        case "Cancelled": return "bg-red-50 text-red-700 border-red-100";
-        case "Preparing": return "bg-amber-50 text-amber-700 border-amber-100";
-        case "Out for Delivery": return "bg-blue-50 text-blue-700 border-blue-100";
-        default: return "bg-slate-50 text-slate-700 border-slate-100";
+        case "Delivered":
+          return "bg-emerald-50 text-emerald-700 border-emerald-100";
+        case "Cancelled":
+          return "bg-red-50 text-red-700 border-red-100";
+        case "Preparing":
+          return "bg-amber-50 text-amber-700 border-amber-100";
+        case "Out for Delivery":
+          return "bg-blue-50 text-blue-700 border-blue-100";
+        default:
+          return "bg-slate-50 text-slate-700 border-slate-100";
       }
     };
 
@@ -140,7 +145,7 @@ const OrderSideBar = React.memo(
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={() => sendOrderUpdate(selectedOrder, 'confirmed')}
+                    onClick={() => sendOrderUpdate(selectedOrder, "confirmed")}
                     className="h-10 w-10 rounded-xl border-slate-100 hover:bg-emerald-50 hover:text-emerald-600 transition-all text-slate-400"
                     title="Notify Customer"
                   >
@@ -159,7 +164,6 @@ const OrderSideBar = React.memo(
 
               {/* Body */}
               <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-8">
-
                 {/* Summary */}
                 <section className="space-y-4">
                   <div className="grid grid-cols-2 gap-3">
@@ -167,13 +171,17 @@ const OrderSideBar = React.memo(
                       <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-2 flex items-center gap-1.5">
                         <CreditCardIcon className="size-3" /> Method
                       </p>
-                      <p className="text-xs font-bold text-slate-700">{selectedOrder.paymentMethod?.toUpperCase()}</p>
+                      <p className="text-xs font-bold text-slate-700">
+                        {selectedOrder.paymentMethod?.toUpperCase()}
+                      </p>
                     </div>
                     <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
                       <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-2 flex items-center gap-1.5">
                         <Activity className="size-3" /> Status
                       </p>
-                      <span className={`text-[10px] font-black px-2 py-0.5 rounded-lg border uppercase tracking-wider ${getPaymentStatusColor(selectedOrder.paymentStatus)}`}>
+                      <span
+                        className={`text-[10px] font-black px-2 py-0.5 rounded-lg border uppercase tracking-wider ${getPaymentStatusColor(selectedOrder.paymentStatus)}`}
+                      >
                         {selectedOrder.paymentStatus}
                       </span>
                     </div>
@@ -182,7 +190,11 @@ const OrderSideBar = React.memo(
                   <div className="bg-slate-900 p-6 rounded-3xl text-white shadow-xl">
                     {(() => {
                       const subtotal = selectedOrder.items.reduce(
-                        (sum, item) => sum + (item.originalPrice || item.menuItem?.price || 0) * item.quantity, 0
+                        (sum, item) =>
+                          sum +
+                          (item.originalPrice || item.menuItem?.price || 0) *
+                            item.quantity,
+                        0,
                       );
                       const total = selectedOrder.totalPrice;
                       const discount = subtotal - total;
@@ -190,18 +202,30 @@ const OrderSideBar = React.memo(
                       return (
                         <div className="space-y-3">
                           <div className="flex justify-between items-center opacity-60">
-                            <span className="text-[10px] font-black uppercase tracking-widest">Subtotal</span>
-                            <span className="text-sm font-medium">€{subtotal.toFixed(2)}</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest">
+                              Subtotal
+                            </span>
+                            <span className="text-sm font-medium">
+                              €{subtotal.toFixed(2)}
+                            </span>
                           </div>
                           {discount > 0 && (
                             <div className="flex justify-between items-center text-emerald-400">
-                              <span className="text-[10px] font-black uppercase tracking-widest">Discount</span>
-                              <span className="text-sm font-bold">-€{discount.toFixed(2)}</span>
+                              <span className="text-[10px] font-black uppercase tracking-widest">
+                                Discount
+                              </span>
+                              <span className="text-sm font-bold">
+                                -€{discount.toFixed(2)}
+                              </span>
                             </div>
                           )}
                           <div className="pt-3 border-t border-white/10 flex justify-between items-end">
-                            <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Total Amount</span>
-                            <span className="text-3xl font-serif font-black tracking-tighter">€{total.toFixed(2)}</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest opacity-60">
+                              Total Amount
+                            </span>
+                            <span className="text-3xl font-serif font-black tracking-tighter">
+                              €{total.toFixed(2)}
+                            </span>
                           </div>
                         </div>
                       );
@@ -211,7 +235,9 @@ const OrderSideBar = React.memo(
 
                 {/* Customer */}
                 <section className="space-y-4">
-                  <h4 className="text-[11px] font-black uppercase tracking-widest text-slate-900 ml-1">Customer Profile</h4>
+                  <h4 className="text-[11px] font-black uppercase tracking-widest text-slate-900 ml-1">
+                    Customer Profile
+                  </h4>
                   <Card className="border-none bg-slate-50 rounded-3xl overflow-hidden">
                     <CardContent className="p-6 space-y-5">
                       <div className="flex items-start gap-4">
@@ -219,8 +245,12 @@ const OrderSideBar = React.memo(
                           <UserCheck className="size-5" />
                         </div>
                         <div className="flex-1">
-                          <p className="text-xs font-black text-slate-900">{selectedOrder.name}</p>
-                          <p className="text-[10px] text-slate-500 font-medium">Bell: {selectedOrder.doorbellName || "N/A"}</p>
+                          <p className="text-xs font-black text-slate-900">
+                            {selectedOrder.name}
+                          </p>
+                          <p className="text-[10px] text-slate-500 font-medium">
+                            Bell: {selectedOrder.doorbellName || "N/A"}
+                          </p>
                         </div>
                       </div>
 
@@ -229,8 +259,12 @@ const OrderSideBar = React.memo(
                           <Phone className="size-5" />
                         </div>
                         <div className="flex-1">
-                          <p className="text-xs font-black text-slate-900">{selectedOrder.phoneNumber || "N/A"}</p>
-                          <p className="text-[10px] text-slate-500 font-medium uppercase tracking-widest">Contact</p>
+                          <p className="text-xs font-black text-slate-900">
+                            {selectedOrder.phoneNumber || "N/A"}
+                          </p>
+                          <p className="text-[10px] text-slate-500 font-medium uppercase tracking-widest">
+                            Contact
+                          </p>
                         </div>
                       </div>
 
@@ -240,9 +274,12 @@ const OrderSideBar = React.memo(
                         </div>
                         <div className="flex-1">
                           <p className="text-[11px] font-bold text-slate-900 leading-relaxed">
-                            {selectedOrder.deliveryAddress.street}, {selectedOrder.deliveryAddress.city}
+                            {selectedOrder.deliveryAddress.street},{" "}
+                            {selectedOrder.deliveryAddress.city}
                           </p>
-                          <p className="text-[10px] text-slate-500 font-medium">{selectedOrder.deliveryAddress.zipCode}</p>
+                          <p className="text-[10px] text-slate-500 font-medium">
+                            {selectedOrder.deliveryAddress.zipCode}
+                          </p>
                         </div>
                       </div>
 
@@ -250,9 +287,16 @@ const OrderSideBar = React.memo(
                         <div className="flex items-center gap-4 bg-white/60 p-3 rounded-2xl border border-slate-100">
                           <Clock className="size-4 text-red-500" />
                           <span className="text-[11px] font-black uppercase tracking-widest text-slate-700">
-                            Requested: {typeof selectedOrder.deliveryTime === "string" && !selectedOrder.deliveryTime.includes("T")
+                            Requested:{" "}
+                            {typeof selectedOrder.deliveryTime === "string" &&
+                            !selectedOrder.deliveryTime.includes("T")
                               ? selectedOrder.deliveryTime
-                              : new Date(selectedOrder.deliveryTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                              : new Date(
+                                  selectedOrder.deliveryTime,
+                                ).toLocaleTimeString([], {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
                           </span>
                         </div>
                       )}
@@ -262,23 +306,36 @@ const OrderSideBar = React.memo(
 
                 {/* Items */}
                 <section className="space-y-4">
-                  <h4 className="text-[11px] font-black uppercase tracking-widest text-slate-900 ml-1">Order Items</h4>
+                  <h4 className="text-[11px] font-black uppercase tracking-widest text-slate-900 ml-1">
+                    Order Items
+                  </h4>
                   <div className="space-y-3">
                     {selectedOrder.items.map((item, index) => (
-                      <div key={index} className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm relative overflow-hidden group">
+                      <div
+                        key={index}
+                        className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm relative overflow-hidden group"
+                      >
                         <div className="flex justify-between items-start gap-3">
                           <div className="flex items-start gap-3">
                             <span className="size-6 bg-slate-900 text-white rounded-lg flex items-center justify-center text-[10px] font-black shrink-0">
                               {item.quantity}
                             </span>
                             <div>
-                              <p className="text-xs font-black text-slate-900">{item.menuItem?.name}</p>
+                              <p className="text-xs font-black text-slate-900">
+                                {item.menuItem?.name}
+                              </p>
                               {item.selectedIngredients?.length > 0 && (
                                 <ul className="mt-2 space-y-1">
                                   {item.selectedIngredients.map((ing, i) => (
-                                    <li key={i} className="text-[10px] text-slate-400 font-medium flex items-center gap-1.5">
+                                    <li
+                                      key={i}
+                                      className="text-[10px] text-slate-400 font-medium flex items-center gap-1.5"
+                                    >
                                       <span className="size-1 bg-slate-200 rounded-full"></span>
-                                      {ing.name} <span className="text-slate-300 italic">(+€{ing.price})</span>
+                                      {ing.name}{" "}
+                                      <span className="text-slate-300 italic">
+                                        (+€{ing.price})
+                                      </span>
                                     </li>
                                   ))}
                                 </ul>
@@ -286,12 +343,17 @@ const OrderSideBar = React.memo(
                             </div>
                           </div>
                           <span className="text-xs font-black text-slate-900">
-                            €{(item?.price || item.menuItem?.price || 0).toFixed(2)}
+                            €
+                            {(item?.price || item.menuItem?.price || 0).toFixed(
+                              2,
+                            )}
                           </span>
                         </div>
                         {item.customizations && (
                           <div className="mt-4 p-3 bg-red-50/30 rounded-xl border border-red-100/50">
-                            <p className="text-[10px] font-medium text-red-700 italic">" {item.customizations} "</p>
+                            <p className="text-[10px] font-medium text-red-700 italic">
+                              " {item.customizations} "
+                            </p>
                           </div>
                         )}
                       </div>
@@ -302,17 +364,27 @@ const OrderSideBar = React.memo(
                 {/* Operations */}
                 <section className="space-y-6 pt-4">
                   <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Order Status</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">
+                      Order Status
+                    </label>
                     <Select
                       value={selectedOrder.orderStatus}
-                      onValueChange={(v) => handleStatusChange(selectedOrder._id, v)}
+                      onValueChange={(v) =>
+                        handleStatusChange(selectedOrder._id, v)
+                      }
                     >
-                      <SelectTrigger className={`rounded-xl border-slate-100 font-bold h-12 px-6 ${getStatusStyles(selectedOrder.orderStatus)}`}>
+                      <SelectTrigger
+                        className={`rounded-xl border-slate-100 font-bold h-12 px-6 ${getStatusStyles(selectedOrder.orderStatus)}`}
+                      >
                         <SelectValue placeholder="Select status" />
                       </SelectTrigger>
                       <SelectContent className="rounded-2xl border-slate-100 shadow-2xl p-2 z-[1990] bg-slate-100">
                         {statusOptions.map((s) => (
-                          <SelectItem key={s} value={s} className="font-bold cursor-pointer h-10 px-4">
+                          <SelectItem
+                            key={s}
+                            value={s}
+                            className="font-bold cursor-pointer h-10 px-4"
+                          >
                             {s}
                           </SelectItem>
                         ))}
@@ -321,7 +393,9 @@ const OrderSideBar = React.memo(
                   </div>
 
                   <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Estimated Arrival (ETA)</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">
+                      Estimated Arrival (ETA)
+                    </label>
                     <div className="flex items-center gap-4 bg-slate-50 p-2 rounded-2xl border border-slate-100">
                       <Button
                         variant="white"
@@ -333,8 +407,12 @@ const OrderSideBar = React.memo(
                         <ChevronDown className="h-4 w-4" />
                       </Button>
                       <div className="flex-1 text-center font-serif font-black italic">
-                        <span className="text-2xl text-slate-900 mr-1">{etaMinutes}</span>
-                        <span className="text-[10px] font-sans font-black uppercase tracking-widest text-slate-400">min</span>
+                        <span className="text-2xl text-slate-900 mr-1">
+                          {etaMinutes}
+                        </span>
+                        <span className="text-[10px] font-sans font-black uppercase tracking-widest text-slate-400">
+                          min
+                        </span>
                       </div>
                       <Button
                         variant="white"
@@ -357,8 +435,12 @@ const OrderSideBar = React.memo(
                     onClick={handleUpdateOrder}
                     disabled={state.upLoading}
                   >
-                    {state.upLoading ? <Loader2 className="animate-spin size-4 mr-2" /> : <Save className="size-4 mr-2" />}
-                    Update Order
+                    {state.upLoading ? (
+                      <Loader2 className="animate-spin size-4 mr-2" />
+                    ) : (
+                      <Save className="size-4 mr-2" />
+                    )}
+                    Update <span className="hidden sm:inline">Order</span>
                   </Button>
                   <Button
                     variant="outline"
@@ -366,8 +448,12 @@ const OrderSideBar = React.memo(
                     onClick={handlePrinterAnOrder}
                     disabled={state.punchLoading}
                   >
-                    {state.punchLoading ? <Loader2 className="animate-spin size-4 mr-2" /> : <Printer className="size-4 mr-2" />}
-                    Print Order
+                    {state.punchLoading ? (
+                      <Loader2 className="animate-spin size-4 mr-2" />
+                    ) : (
+                      <Printer className="size-4 mr-2" />
+                    )}
+                    Print <span className="hidden sm:inline">Order</span>
                   </Button>
                 </div>
 
@@ -386,7 +472,7 @@ const OrderSideBar = React.memo(
         )}
       </AnimatePresence>
     );
-  }
+  },
 );
 
 export default OrderSideBar;

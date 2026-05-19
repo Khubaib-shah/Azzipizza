@@ -1,13 +1,5 @@
 import React from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@shared/components/ui/dialog";
-import { Button } from "@shared/components/ui/button";
+import Modal from "@shared/components/ui/Modal";
 
 const DeleteProductDialog = ({
   deleteDialogOpen,
@@ -17,33 +9,32 @@ const DeleteProductDialog = ({
   loading,
 }) => {
   return (
-    <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Confirm Deletion</DialogTitle>
-          <DialogDescription>
-            Are you sure you want to delete <b>{itemToDelete?.name}</b>? This
-            action cannot be undone.
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter className="gap-2 sm:gap-0">
-          <Button
-            variant="outline"
-            className="cursor-pointer me-2"
+    <Modal isOpen={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)} className="max-w-md">
+      <div className="p-6 md:p-8 space-y-6">
+        <div>
+          <h2 className="text-xl font-bold text-slate-900 mb-1">Confirm Deletion</h2>
+          <p className="text-sm text-slate-500 font-medium leading-relaxed">
+            Are you sure you want to delete <b>{itemToDelete?.name}</b>? This action cannot be undone.
+          </p>
+        </div>
+        <div className="flex items-center justify-end gap-3 pt-6 border-t border-slate-100/50">
+          <button
+            type="button"
+            className="cursor-pointer px-5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-sm font-semibold transition-colors shadow-xs"
             onClick={() => setDeleteDialogOpen(false)}
           >
             Cancel
-          </Button>
-          <Button
-            variant="destructive"
-            className="cursor-pointer"
+          </button>
+          <button
+            type="button"
+            className="cursor-pointer px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white text-sm font-bold transition-colors shadow-sm flex items-center justify-center gap-2"
             onClick={() => handleDelete(itemToDelete?._id)}
             disabled={loading}
           >
             {loading ? (
               <>
                 <svg
-                  className="animate-spin h-5 w-5 mr-2 text-white"
+                  className="animate-spin h-4 w-4 text-white"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -67,10 +58,10 @@ const DeleteProductDialog = ({
             ) : (
               "Delete Item"
             )}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          </button>
+        </div>
+      </div>
+    </Modal>
   );
 };
 

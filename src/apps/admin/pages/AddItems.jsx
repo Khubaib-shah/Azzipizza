@@ -33,6 +33,12 @@ const AddItems = () => {
     category: "",
     ingredients: [],
     image: null,
+    showInSpecialOffers: false,
+    showInChefsSpecials: false,
+    showInWeeklySpecials: false,
+    specialOffersOrder: "0",
+    chefsSpecialsOrder: "0",
+    weeklySpecialsOrder: "0",
   });
   const [loading, setLoading] = useState(false);
   const [formErrors, setFormErrors] = useState({});
@@ -128,6 +134,12 @@ const AddItems = () => {
       category: "",
       ingredients: [],
       image: null,
+      showInSpecialOffers: false,
+      showInChefsSpecials: false,
+      showInWeeklySpecials: false,
+      specialOffersOrder: "0",
+      chefsSpecialsOrder: "0",
+      weeklySpecialsOrder: "0",
     });
     setImagePreview(null);
     setFormErrors({});
@@ -308,6 +320,95 @@ const AddItems = () => {
                 />
               </div>
 
+              {/* Specials & Sorting Section */}
+              <div className="space-y-6 pt-4 border-t border-slate-100/50">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">
+                  Specials & Sorting Controls
+                </label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-slate-50/40 p-6 rounded-4xl border border-slate-100/50">
+                  {/* Special Offers toggle & order */}
+                  <div className="space-y-4 p-4 bg-white rounded-3xl border border-slate-100 shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-black uppercase tracking-wider text-slate-700">Special Offers</span>
+                      <input
+                        type="checkbox"
+                        name="showInSpecialOffers"
+                        checked={formData.showInSpecialOffers}
+                        onChange={(e) => setFormData(prev => ({ ...prev, showInSpecialOffers: e.target.checked }))}
+                        className="w-5 h-5 accent-red-600 rounded-md cursor-pointer"
+                      />
+                    </div>
+                    {formData.showInSpecialOffers && (
+                      <div className="space-y-2">
+                        <label className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Sort Order</label>
+                        <Input
+                          type="number"
+                          name="specialOffersOrder"
+                          value={formData.specialOffersOrder}
+                          onChange={handleInputChange}
+                          placeholder="0"
+                          className="h-10 px-4 rounded-xl border-slate-100 bg-slate-50/50 focus-visible:ring-red-600/10 font-bold text-slate-800"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Chef's Specials toggle & order */}
+                  <div className="space-y-4 p-4 bg-white rounded-3xl border border-slate-100 shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-black uppercase tracking-wider text-slate-700">Chef's Specials</span>
+                      <input
+                        type="checkbox"
+                        name="showInChefsSpecials"
+                        checked={formData.showInChefsSpecials}
+                        onChange={(e) => setFormData(prev => ({ ...prev, showInChefsSpecials: e.target.checked }))}
+                        className="w-5 h-5 accent-red-600 rounded-md cursor-pointer"
+                      />
+                    </div>
+                    {formData.showInChefsSpecials && (
+                      <div className="space-y-2">
+                        <label className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Sort Order</label>
+                        <Input
+                          type="number"
+                          name="chefsSpecialsOrder"
+                          value={formData.chefsSpecialsOrder}
+                          onChange={handleInputChange}
+                          placeholder="0"
+                          className="h-10 px-4 rounded-xl border-slate-100 bg-slate-50/50 focus-visible:ring-red-600/10 font-bold text-slate-800"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Weekly Specials toggle & order */}
+                  <div className="space-y-4 p-4 bg-white rounded-3xl border border-slate-100 shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-black uppercase tracking-wider text-slate-700">Weekly Specials</span>
+                      <input
+                        type="checkbox"
+                        name="showInWeeklySpecials"
+                        checked={formData.showInWeeklySpecials}
+                        onChange={(e) => setFormData(prev => ({ ...prev, showInWeeklySpecials: e.target.checked }))}
+                        className="w-5 h-5 accent-red-600 rounded-md cursor-pointer"
+                      />
+                    </div>
+                    {formData.showInWeeklySpecials && (
+                      <div className="space-y-2">
+                        <label className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Sort Order</label>
+                        <Input
+                          type="number"
+                          name="weeklySpecialsOrder"
+                          value={formData.weeklySpecialsOrder}
+                          onChange={handleInputChange}
+                          placeholder="0"
+                          className="h-10 px-4 rounded-xl border-slate-100 bg-slate-50/50 focus-visible:ring-red-600/10 font-bold text-slate-800"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
               {/* Ingredients Section */}
               <div className="space-y-4">
                 <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">
@@ -331,10 +432,12 @@ const AddItems = () => {
                   <Button
                     type="button"
                     onClick={handleAddIngredient}
-                    className="h-12 bg-slate-900 hover:bg-slate-800 text-white rounded-xl px-6 font-bold shadow-lg transition-transform active:scale-95"
+                    className="h-12 bg-slate-900 hover:bg-slate-800 text-white rounded-xl px-4 sm:px-6 font-bold shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-1.5"
                     disabled={!newIngredient || !newIngredientPrice}
                   >
-                    Add
+                    <PlusCircle className="h-5 w-5" />
+                    <span className="hidden sm:inline">Add Ingredient</span>
+                    <span className="inline sm:hidden">Add</span>
                   </Button>
                 </div>
 
@@ -390,14 +493,16 @@ const AddItems = () => {
                           <Button
                             type="button"
                             variant="destructive"
-                            className="rounded-2xl font-black px-8 h-12 shadow-2xl scale-110"
+                            className="rounded-2xl font-black px-4 sm:px-8 h-12 shadow-2xl scale-110 flex items-center justify-center gap-1.5"
                             onClick={() => {
                               setImagePreview(null);
                               setFormData((prev) => ({ ...prev, image: null }));
                               if (imageInputRef.current) imageInputRef.current.value = "";
                             }}
                           >
-                            Replace Masterpiece
+                            <X className="h-5 w-5" />
+                            <span className="hidden sm:inline">Replace Masterpiece</span>
+                            <span className="inline sm:hidden">Replace</span>
                           </Button>
                         </div>
                       </motion.div>
@@ -429,9 +534,11 @@ const AddItems = () => {
                         <Button
                           type="button"
                           variant="outline"
-                          className="mt-8 rounded-2xl border-slate-200 font-bold px-8 hover:bg-slate-50"
+                          className="mt-8 rounded-2xl border-slate-200 font-bold px-4 sm:px-8 hover:bg-slate-50 flex items-center justify-center gap-1.5"
                         >
-                          Select Photo
+                          <Upload className="h-4 w-4" />
+                          <span className="hidden sm:inline">Select Photo</span>
+                          <span className="inline sm:hidden">Select</span>
                         </Button>
                       </motion.div>
                     )}
@@ -463,15 +570,19 @@ const AddItems = () => {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full sm:w-auto min-w-[240px] h-16 bg-red-600 hover:bg-red-700 text-white rounded-4xl font-black text-lg shadow-2xl shadow-red-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:grayscale"
+                className="w-full sm:w-auto min-w-[240px] h-16 bg-red-600 hover:bg-red-700 text-white rounded-4xl font-black text-lg shadow-2xl shadow-red-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:grayscale flex items-center justify-center gap-3"
               >
                 {loading ? (
-                  <div className="flex items-center gap-3">
+                  <>
                     <Loader2 className="h-6 w-6 animate-spin" />
-                    Saving...
-                  </div>
+                    <span>Saving...</span>
+                  </>
                 ) : (
-                  "Add to Menu"
+                  <>
+                    <PlusCircle className="h-6 w-6" />
+                    <span className="hidden sm:inline">Add to Menu</span>
+                    <span className="inline sm:hidden">Add Item</span>
+                  </>
                 )}
               </Button>
             </CardFooter>
