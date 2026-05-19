@@ -1,1 +1,0 @@
-const t=e=>{try{const o=[...JSON.parse(localStorage.getItem("orderHistory"))||[],e];localStorage.setItem("orderHistory",JSON.stringify(o)),window.dispatchEvent(new Event("orderHistoryUpdated"))}catch(r){console.error("Error saving order:",r)}};export{t as s};

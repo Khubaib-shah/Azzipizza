@@ -5,6 +5,7 @@ import smoothscroll from "smoothscroll-polyfill";
 import Context from "@shared/context/dataContext";
 import MenuModal from "../Modal/MenuModel";
 import ProductsListSkeleton from "../ProductsListSkeleton";
+import SectionHeader from "../SectionHeader";
 import { FaSearch } from "react-icons/fa";
 
 function ProductsList() {
@@ -164,16 +165,19 @@ function ProductsList() {
             ref={(el) => (categoryRefs.current[category] = el)}
             className="mt-10 mb-8"
           >
-            <div className="flex items-center gap-4 mb-6">
-              <div className="decorative-line flex-grow max-w-[100px]"></div>
-              <h2 className="text-2xl sm:text-3xl font-bold capitalize text-gray-800">
-                {category}
-              </h2>
-              <div className="decorative-line flex-grow"></div>
-            </div>
-            <p className="text-center text-gray-600 mb-6 italic">
-              Handcrafted with love and authentic Italian ingredients
-            </p>
+            <SectionHeader
+              title={category}
+              subtitle={
+                {
+                  "pizze rosse": "Classic tomato-based pizzas with rich, authentic flavors",
+                  "pizze bianche": "Delicate white pizzas without tomato sauce",
+                  "fritti": "Crispy golden fried bites, perfect for sharing",
+                  "dolci": "Sweet Italian desserts to end your meal perfectly",
+                  "bibite": "Refreshing drinks to complement your pizza",
+                  "birre": "Craft and classic beers to pair with your meal",
+                }[category] || "Handcrafted with love and authentic Italian ingredients"
+              }
+            />
             {listing[category]?.length > 0 ? (
               <div className="relative mt-4">
                 <div className="flex gap-4 overflow-x-auto whitespace-nowrap styled-scrollbar pb-4 will-change-scroll">

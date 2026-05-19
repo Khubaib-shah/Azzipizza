@@ -1,1 +1,0 @@
-import{as as e}from"./index-d-BJ74Y5.js";class a{async getAllOrders(){return e.get("/api/orders")}async updateOrder(r,s){return e.put(`/api/orders/${r}`,s)}async deleteOrder(r){return e.delete(`/api/orders/${r}`)}async placeOrder(r){return e.post("/api/orders",r)}}const n=new a;export{n as o};

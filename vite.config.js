@@ -10,7 +10,6 @@ export default defineConfig({
     alias: {
       '@client': fileURLToPath(new URL('./src/apps/client', import.meta.url)),
       '@admin': fileURLToPath(new URL('./src/apps/admin', import.meta.url)),
-      '@': fileURLToPath(new URL('./src/apps/admin', import.meta.url)),
       '@shared': fileURLToPath(new URL('./src/shared', import.meta.url)),
     },
   },

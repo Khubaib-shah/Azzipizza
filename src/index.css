@@ -5,9 +5,8 @@
 /* -------------------------------------------------------------------------- */
 /* CLIENT THEME SCOPE                                                       */
 /* -------------------------------------------------------------------------- */
-.client-theme {
-
-  /* Client CSS Variables */
+:root {
+  /* Global Client CSS Variables */
   --toastify-font-family: "Poppins", sans-serif;
   --color-primary: #dc2626;
   --color-primary-light: #ef4444;
@@ -23,18 +22,20 @@
   --color-text: #1f2937;
   --color-text-light: #6b7280;
   --color-text-lighter: #9ca3af;
+}
 
+.client-theme {
   font-family: "Poppins", sans-serif;
   background: var(--color-background);
   color: var(--color-text);
   min-height: 100vh;
 }
 
-.client-theme h1, 
-.client-theme h2, 
-.client-theme h3, 
-.client-theme h4, 
-.client-theme h5, 
+.client-theme h1,
+.client-theme h2,
+.client-theme h3,
+.client-theme h4,
+.client-theme h5,
 .client-theme h6 {
   font-family: "Playfair Display", serif;
 }
@@ -101,9 +102,6 @@
   font-weight: 600;
 }
 
-/* Add more specific client/admin styles here if needed, 
-   or keep them in their respective component.css files */
-
 /* Premium Utility Classes */
 .glass-morphism {
   background: rgba(255, 255, 255, 0.7);
@@ -147,9 +145,17 @@
 
 /* Animations */
 @keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
 }
 
 .animate-float {

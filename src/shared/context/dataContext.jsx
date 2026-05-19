@@ -1,10 +1,17 @@
-import { createContext, useState, useEffect, useMemo, useCallback } from "react";
+import { createContext, useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { baseUri } from "@shared/config/api";
 
 const Context = createContext();
 
 export const ContextProvider = ({ children }) => {
   const [items, setItems] = useState([]);
+  const itemsRef = useRef([]);
+
+  // Sync ref to avoid stale closures in stable callbacks
+  useEffect(() => {
+    itemsRef.current = items;
+  }, [items]);
+
   const [cartItems, setCartItems] = useState(
     JSON.parse(localStorage.getItem("cartItems")) || []
   );
@@ -13,7 +20,7 @@ export const ContextProvider = ({ children }) => {
 
   const fetchMenu = useCallback(async () => {
     // Only show loading if we don't have items yet to prevent flickering
-    if (items.length === 0) {
+    if (itemsRef.current.length === 0) {
       setIsLoading(true);
     }
     setError(null);
@@ -26,7 +33,7 @@ export const ContextProvider = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [items.length]);
+  }, []);
 
   useEffect(() => {
     fetchMenu();

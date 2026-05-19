@@ -3,7 +3,11 @@ import { X } from "lucide-react";
 
 export default function Modal({ isOpen, onClose, children, className }) {
   return (
-    <Dialog open={isOpen} onClose={onClose} className="relative z-50">
+    <Dialog
+      open={isOpen}
+      onClose={onClose}
+      className="relative z-50"
+    >
       <DialogBackdrop
         transition
         className="fixed inset-0 bg-black/60 backdrop-blur-md transition-opacity duration-300 ease-out data-[closed]:opacity-0"

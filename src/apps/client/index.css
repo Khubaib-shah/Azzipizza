@@ -1,9 +1,11 @@
-@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,800&display=swap");
+/* ═══════════════════════════════════════════════════════════════════════════
+   Azzipizza Client Theme Styles
+   NOTE: Fonts, Tailwind, and base color variables are loaded via src/index.css.
+   This file contains client-specific extensions only.
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-@import "tailwindcss";
-
-/* CSS Custom Properties for Premium Restaurant Theme */
-:root {
+/* Client-specific CSS custom properties (extending .client-theme from root) */
+.client-theme {
   /* Toastify Overrides */
   --toastify-font-family: "Poppins", sans-serif;
   --toastify-color-success: #1a352c;
@@ -13,34 +15,6 @@
   --toastify-toast-width: 320px;
   --toastify-toast-background: rgba(255, 255, 255, 0.95);
   --toastify-toast-top: 20px;
-
-  /* Primary Colors - Warm & Appetizing */
-  --color-primary: #dc2626;
-  /* Rich tomato red */
-  --color-primary-light: #ef4444;
-  --color-primary-dark: #991b1b;
-  /* Deep burgundy */
-
-  /* Accent Colors */
-  --color-accent: #f59e0b;
-  /* Golden cheese */
-  --color-accent-light: #fcd34d;
-  --color-accent-dark: #d97706;
-
-  /* Secondary Colors */
-  --color-basil: #65a30d;
-  /* Fresh basil green */
-  --color-cream: #fef3c7;
-  --color-beige: #fdf4e3;
-
-  /* Neutrals */
-  --color-background: #fffbeb;
-  /* Warm off-white */
-  --color-surface: #ffffff;
-  --color-text: #1f2937;
-  /* Charcoal */
-  --color-text-light: #6b7280;
-  --color-text-lighter: #9ca3af;
 
   /* Gradients */
   --gradient-primary: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
@@ -74,11 +48,6 @@
   --spacing-md: 1.5rem;
   --spacing-lg: 2rem;
   --spacing-xl: 3rem;
-}
-
-/* Base Styles */
-* {
-  box-sizing: border-box;
 }
 
 html {

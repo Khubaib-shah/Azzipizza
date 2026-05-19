@@ -3,7 +3,9 @@ import { Link } from "react-router-dom";
 import { FaStar, FaFire, FaClock, FaShippingFast } from "react-icons/fa";
 import Context from "@shared/context/dataContext";
 import ProductCard from "../components/cards/ProductsCard";
+import ProductCardSkeleton from "../components/cards/ProductCardSkeleton";
 import HeroSection from "../components/heroSection/HeroSection";
+import SectionHeader from "../components/SectionHeader";
 import { ChevronRight } from "lucide-react";
 
 function Landing() {
@@ -27,105 +29,89 @@ function Landing() {
     }
   }, [items]);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-red-600 mx-auto mb-4"></div>
-          <p className="text-xl text-gray-600">Loading delicious pizzas...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-cream to-white">
       {/* Hero Section */}
       <HeroSection />
 
       {/* Special Offers Section */}
-      {specialOffers.length > 0 && (
+      {(isLoading || specialOffers.length > 0) && (
         <section className="!py-2 md:py-16 bg-gradient-to-r from-red-50 to-amber-50">
           <div className="container mx-auto px-px md:px-4">
-            <div className="text-center !mb-3 md:mb-12 animate-slide-up">
-              <div className="inline-block bg-red-600 text-white px-3 py-1 md:px-6 md:py-2 rounded-full mb-1 md:mb-4 animate-bounce">
-                <span className="text-sm md:text-lg font-semibold md:font-bold">
-                  🔥 HOT DEALS 🔥
-                </span>
-              </div>
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-2 md:mb-4">
-                Special Offers
-              </h2>
-              <p className="text-xs md:text-xl text-gray-600 max-w-2xl mx-auto">
-                Don't miss out on our exclusive deals and limited-time offers!
-              </p>
-            </div>
+            <SectionHeader
+              title="Special Offers"
+              subtitle="Don't miss out on our exclusive deals and limited-time offers!"
+            />
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 mb-8">
-              {specialOffers.map((item, index) => (
-                <div
-                  key={item._id}
-                  className="animate-scale-in"
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <ProductCard product={item} />
-                </div>
-              ))}
+              {isLoading
+                ? [...Array(3)].map((_, index) => (
+                    <div key={index} className="animate-scale-in">
+                      <ProductCardSkeleton />
+                    </div>
+                  ))
+                : specialOffers.map((item, index) => (
+                    <div
+                      key={item._id}
+                      className="animate-scale-in"
+                      style={{ animationDelay: `${index * 0.1}s` }}
+                    >
+                      <ProductCard product={item} />
+                    </div>
+                  ))}
             </div>
 
-            <div className="text-center">
-              <Link
-                to="/menu"
-                className="btn-primary inline-block text-sm md:text-lg px-8 !py-2 md:py-4"
-              >
-                View All Offers →
-              </Link>
-            </div>
+            {!isLoading && (
+              <div className="text-center">
+                <Link
+                  to="/menu"
+                  className="btn-primary inline-block text-sm md:text-lg px-8 !py-2 md:py-4"
+                >
+                  View All Offers →
+                </Link>
+              </div>
+            )}
           </div>
         </section>
       )}
 
       {/* Chef's Special Section */}
-      {featuredItems.length > 0 && (
+      {(isLoading || featuredItems.length > 0) && (
         <section className="py-16">
           <div className="container mx-auto px-px md:px-4">
-            <div className="flex items-center justify-center gap-2 md:gap-4 mb-4 md:mb-12">
-              <div className="decorative-line flex-grow max-w-[100px]"></div>
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-3 mb-2">
-                  <FaStar className="text-amber-500 text-3xl" />
-                  <h2 className="text-4xl md:text-5xl font-bold text-gray-800">
-                    Chef's Specials
-                  </h2>
-                  <FaStar className="text-amber-500 text-3xl" />
-                </div>
-                <p className="text-sm md:text-xl text-gray-600">
-                  Handpicked by our master chefs
-                </p>
-              </div>
-              <div className="decorative-line flex-grow max-w-[100px]"></div>
-            </div>
+            <SectionHeader
+              title="Chef's Specials"
+              subtitle="Handpicked by our master chefs"
+            />
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-4 md:mb-8">
-              {featuredItems.map((item, index) => (
-                <div
-                  key={item._id}
-                  className="animate-slide-up"
-                  style={{ animationDelay: `${index * 0.15}s` }}
-                >
-                  <ProductCard product={item} />
-                </div>
-              ))}
+              {isLoading
+                ? [...Array(4)].map((_, index) => (
+                    <div key={index} className="animate-slide-up">
+                      <ProductCardSkeleton />
+                    </div>
+                  ))
+                : featuredItems.map((item, index) => (
+                    <div
+                      key={item._id}
+                      className="animate-slide-up"
+                      style={{ animationDelay: `${index * 0.15}s` }}
+                    >
+                      <ProductCard product={item} />
+                    </div>
+                  ))}
             </div>
 
-            <div className="text-center">
-              <Link
-                to="/menu"
-                className="btn-accent !text-white inline-block text-sm md:text-lg md:px-8 !py-3 md:py-4"
-              >
-                Explore Full Menu →
-              </Link>
-            </div>
+            {!isLoading && (
+              <div className="text-center">
+                <Link
+                  to="/menu"
+                  className="btn-accent !text-white inline-block text-sm md:text-lg md:px-8 !py-3 md:py-4"
+                >
+                  Explore Full Menu →
+                </Link>
+              </div>
+            )}
           </div>
         </section>
       )}
@@ -133,25 +119,13 @@ function Landing() {
       {/* Why Choose Us Section */}
       <section className="md:py-16 bg-gradient-to-br from-gray-50 to-white">
         <div className="container mx-auto px-px md:px-4">
-          <div className="flex items-center justify-center gap-2 md:gap-4 mb-4 md:mb-12">
-            <div className="decorative-line flex-grow max-w-[100px]"></div>
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-3 mb-2">
-                <FaStar className="text-amber-500 text-3xl" />
-                <h2 className="text-4xl md:text-5xl font-bold text-gray-800">
-                  Why Choose Azzipizza?
-                </h2>
-                <FaStar className="text-amber-500 text-3xl" />
-              </div>
-              <p className="text-sm md:text-xl text-gray-600">
-                Experience the difference that passion and quality make
-              </p>
-            </div>
-            <div className="decorative-line flex-grow max-w-[100px]"></div>
-          </div>
+          <SectionHeader
+            title="Why Choose Azzipizza?"
+            subtitle="Experience the difference that passion and quality make"
+          />
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-4 md:mb-8">
-            <div className="card-premium !p-4 md:p-8 text-start hover:scale-105 transition-transform duration-300">
+            <div className="card-premium !p-4 md:p-8 text-start">
               <div className="bg-red-100 size-14 md:size-20 rounded-full flex items-center justify-center mb-1 md:mb-4">
                 <FaFire className="text-red-600 size-7 md:size-10" />
               </div>
@@ -164,7 +138,7 @@ function Landing() {
               </p>
             </div>
 
-            <div className="card-premium !p-4 md:p-8 text-start hover:scale-105 transition-transform duration-300">
+            <div className="card-premium !p-4 md:p-8 text-start">
               <div className="bg-green-100 size-14 md:size-20 rounded-full flex items-center justify-center ms-auto mb-1 md:mb-4">
                 <FaStar className="text-green-600 size-7 md:size-10" />
               </div>
@@ -177,7 +151,7 @@ function Landing() {
               </p>
             </div>
 
-            <div className="card-premium !p-4 md:p-8 text-start hover:scale-105 transition-transform duration-300">
+            <div className="card-premium !p-4 md:p-8 text-start">
               <div className="bg-amber-100 size-14 md:size-20 rounded-full flex items-center justify-center mb-1 md:mb-4">
                 <FaClock className="text-amber-600 size-7 md:size-10" />
               </div>
@@ -190,7 +164,7 @@ function Landing() {
               </p>
             </div>
 
-            <div className="card-premium !p-4 md:p-8 text-start hover:scale-105 transition-transform duration-300">
+            <div className="card-premium !p-4 md:p-8 text-start">
               <div className="bg-blue-100 size-14 md:size-20 rounded-full flex items-center justify-center ms-auto mb-1 md:mb-4">
                 <FaShippingFast className="text-blue-600 size-7 md:size-10" />
               </div>
@@ -206,19 +180,15 @@ function Landing() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-4 md:py-16 bg-gradient-to-r from-red-600 to-red-700 text-white">
+      <section className="py-4 md:py-16 bg-gradient-to-br from-amber-50 to-red-50">
         <div className="container mx-auto px-px md:px-4">
-          <div className="text-center mb-6 md:mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold md:mb-4">
-              What Our Customers Say
-            </h2>
-            <p className="text-sm md:text-xl text-amber-200">
-              Don't just take our word for it
-            </p>
-          </div>
+          <SectionHeader
+            title="What Our Customers Say"
+            subtitle="Don't just take our word for it"
+          />
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
-            <div className="bg-white/10 backdrop-blur-md p-4 md:p-8 rounded-2xl border border-white/20">
+            <div className="card-premium p-4 md:p-8">
               <div className="flex mb-2 md:mb-4">
                 {[...Array(5)].map((_, i) => (
                   <FaStar
@@ -234,7 +204,7 @@ function Landing() {
               <p className="font-bold">- Marco R.</p>
             </div>
 
-            <div className="bg-white/10 backdrop-blur-md p-4 md:p-8 rounded-2xl border border-white/20">
+            <div className="card-premium p-4 md:p-8">
               <div className="flex mb-2 md:mb-4">
                 {[...Array(5)].map((_, i) => (
                   <FaStar
@@ -250,7 +220,7 @@ function Landing() {
               <p className="font-bold">- Sofia M.</p>
             </div>
 
-            <div className="bg-white/10 backdrop-blur-md p-4 md:p-8 rounded-2xl border border-white/20">
+            <div className="card-premium p-4 md:p-8">
               <div className="flex mb-2 md:mb-4">
                 {[...Array(5)].map((_, i) => (
                   <FaStar
