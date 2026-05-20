@@ -1,93 +1,135 @@
-# 🍕 Azzipizza – Online Pizza Ordering Website
+# 🍕 Azzipizza — Online Pizza Ordering Frontend
 
-**Azzipizza** is a modern, fast, and mobile-friendly online pizza ordering platform. Customers can browse a rich menu, customize pizzas, place orders, and securely pay online — all from the comfort of home. Designed for simplicity and scalability, it supports real-time order tracking and smooth kitchen management.
+Azzipizza is a modern, responsive pizza ordering frontend built with React, Tailwind CSS, and Vite. It provides a smooth customer experience for browsing menu items, customizing orders, tracking status in real time, and completing secure checkout.
 
 ---
 
 ## 📌 Table of Contents
-- [Key Features](#-key-features)
-- [Tech Stack](#-tech-stack)
-- [Project Structure](#-project-structure)
-- [Installation & Setup](#-installation--setup)
-- [Usage](#-usage)
-- [Prerequisites](#-prerequisites)
-- [Future Enhancements](#-future-enhancements)
-- [Author](#-author)
+
+- [About](#about)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [Environment Variables](#environment-variables)
+- [Available Scripts](#available-scripts)
+- [Future Enhancements](#future-enhancements)
+- [Author](#author)
 
 ---
 
-## 🚀 Key Features
+## About
 
-- 🧾 **Online Ordering** – Browse menu, customize pizzas, and checkout online.
-- 🍕 **Pizza Customization** – Choose size, crust, toppings, and extras.
-- 💳 **Secure Payments** – Integrated with **Satispay** or **Paypal**.
-- 📦 **Real-Time Order System** – Kitchen receives instant order notifications via **socket.io**.
-- 📱 **Responsive UI** – Works flawlessly on mobile, tablet, and desktop.
-- 🔔 **Live Order Notifications** – Sound alerts for new orders.
-- 📊 **Scalable Backend** – Easily expandable for admin dashboard, analytics, etc.
+This repository contains the frontend application for Azzipizza. It is designed to work with a backend API and real-time order notification system, delivering an intuitive ordering flow for customers and a smooth admin experience for kitchen staff.
 
 ---
 
-## 🧰 Tech Stack
+## Features
 
-### Frontend:
-- React.js (Vite)
+- 🍕 Menu browsing with pizza customization
+- 🛒 Cart management and checkout flow
+- 🔔 Real-time order updates using Socket.io
+- 📱 Fully responsive layout for mobile and desktop
+- 💳 Payment integration compatibility (Satispay / PayPal)
+- 📄 Order history and tracking pages
+- 🚨 Live notifications for new orders
+
+---
+
+## Tech Stack
+
+- React 19
+- Vite
 - Tailwind CSS
-- ShadCN/UI
-- Context API
-
-### Backend:
-- Node.js
-- Express.js
-
-### Database:
-- MongoDB (via Mongoose)
-
-### Others:
-- Socket.io (for real-time updates)
-- Satispay or Paypal (payment integration)
-- dotenv (environment config)
+- ShadCN / Radix UI components
+- React Router DOM
+- Socket.io client
+- Axios
+- React Toastify
+- Recharts
 
 ---
 
-## 📦 Project Structure
+## Project Structure
+
+```
 azzipizza/
-├── frontend/      # Customer web interface
-├── admin/         # Optional admin dashboard (for kitchen/staff)
+├── frontend/      # Customer-facing React app
+├── admin/         # Kitchen/admin dashboard
 ├── backend/       # REST API server
+```
 
+This repo is the frontend package. The full monorepo includes separate `admin` and `backend` services.
 
-## ⚙️ Installation & Setup
+---
 
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+ installed
+- npm 10+ installed
+- Backend API available locally or remotely
+
+### Install
 
 ```bash
-# 1. Clone the repository
+# Clone the repository
 git clone https://github.com/Khubaib-shah/azzipizza.git
 
-# 2. Navigate into the project
-cd azzipizza/frontend pr cd azzipizza/admin 
+# Change into the frontend folder
+cd azzipizza/frontend
 
-# 3. Install frontend or admin dependencies
+# Install dependencies
 npm install
+```
 
-# 4. Create a .env file at the root with the following:
-VITE_BASE_URL_PRO=your_backend_url
+### Run Locally
+
+```bash
+npm run dev
+```
+
+Open `http://localhost:5173` in your browser.
+
+---
+
+## Environment Variables
+
+Create a `.env` file in `frontend/` with the following values:
+
+```env
 VITE_BASE_URL_DEV=http://localhost:5000
+VITE_BASE_URL_PRO=https://your-production-backend.example.com
+```
 
-# 5. Start the server
-npm start
+Use `VITE_BASE_URL_DEV` for local development and `VITE_BASE_URL_PRO` for production builds.
 
-Now open your browser and visit:
-👉 http://localhost:5173
+---
 
-🧪 Usage
+## Available Scripts
 
-Browse the pizza menu on the homepage.
-Customize pizzas and add them to your cart.
-Place your order and pay securely.
-Kitchen receives order in real-time.
+From the `frontend/` directory:
 
-🙌 Author
+- `npm run dev` — start the development server
+- `npm run build` — build the production bundle
+- `npm run preview` — preview the production build locally
+- `npm run lint` — run ESLint across the codebase
+
+---
+
+## Future Enhancements
+
+- ✅ Add user authentication and profile management
+- ✅ Improve checkout payment flows
+- ✅ Add search and filtering for menu items
+- ✅ Add order history and saved favorites
+- ✅ Support multi-vendor or multi-restaurant setups
+
+---
+
+## Author
+
 Built with ❤️ by Khubaib Shah
 
-Feel free to star ⭐ the repo and contribute!
+Feel free to star the repo, open issues, and contribute improvements.
