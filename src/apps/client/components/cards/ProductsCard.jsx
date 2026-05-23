@@ -79,12 +79,20 @@ const ProductCard = memo(({ product }) => {
 
   return (
     <>
-      {/* Compact Card */}
-      <div
-        className="group relative bg-white rounded-2xl shadow-sm lg:hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden border border-gray-100 flex flex-col h-full transform-gpu lg:hover:-translate-y-1 active:scale-95 will-change-transform"
-        onClick={() => setIsModalOpen(true)}
-        style={{ contain: "layout" }}
+      {/* Scroll-animated Entrance Wrapper */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="h-full"
       >
+        {/* Compact Card */}
+        <div
+          className="group relative md:bg-white rounded-sm md:rounded-2xl shadow-sm lg:hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden border border-gray-100 flex flex-col h-full transform-gpu lg:hover:-translate-y-1 active:scale-95 will-change-transform"
+          onClick={() => setIsModalOpen(true)}
+          style={{ contain: "layout" }}
+        >
         {/* Badges */}
         <div className="absolute top-2 left-2 z-10 flex flex-col gap-1.5">
           {discount > 0 && (
@@ -124,48 +132,49 @@ const ProductCard = memo(({ product }) => {
         </div>
 
         {/* Content */}
-        <div className="p-3 flex flex-col flex-grow">
-          <div className="flex justify-between items-start mb-1">
-            <h3 className="font-bold text-gray-800 text-sm leading-tight line-clamp-1 lg:group-hover:text-[var(--color-primary)] transition-colors">
+        <div className="p-2 sm:p-4 flex flex-col flex-grow">
+          <div className="flex justify-between items-start mb-2 gap-2">
+            <h3 className="!font-bold text-gray-900 !text-sm sm:text-xl text-nowrap font-['Playfair_Display'] leading-tight line-clamp-2 lg:group-hover:text-[var(--color-primary)] transition-colors">
               {product.name}
             </h3>
-            <div className="flex items-center gap-1 text-[10px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">
-              <FaStar className="text-amber-400" />
-              <span>{rating}</span>
+            <div className="hidden md:flex shrink-0 items-center gap-1 text-[10px] sm:text-xs text-gray-600 bg-gray-50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md border border-gray-100 mt-0.5">
+              <FaStar className="text-amber-400" size={10} />
+              <span className="font-medium">{rating}</span>
             </div>
           </div>
 
-          <p className="text-[11px] text-gray-500 line-clamp-2 mb-3 leading-relaxed flex-grow">
+          {/* <p className="text-[11px] sm:text-sm text-gray-500 line-clamp-2 mb-3 sm:mb-4 leading-relaxed flex-grow">
             {product.description}
-          </p>
+          </p> */}
 
-          <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-50">
+          <div className="flex items-end justify-between mt-auto  sm:pt-4 border-t border-gray-50 border-dashed">
             <div className="flex flex-col">
               {discount > 0 && (
-                <span className="text-[10px] text-gray-400 line-through">
+                <span className="text-[10px] sm:text-xs text-gray-400 line-through mb-0.5">
                   €{basePrice.toFixed(2)}
                 </span>
               )}
-              <span className="font-bold text-base text-[var(--color-primary)]">
+              <span className="font-bold text-base sm:text-xl text-[var(--color-primary)] leading-none">
                 €{discountedPrice.toFixed(2)}
               </span>
             </div>
 
             <Button
-              className="bg-[var(--color-primary)] text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-black transition-colors shadow-sm p-0 border-none cursor-pointer"
+              className="bg-[var(--color-primary)] text-white w-9 h-9 sm:w-10 sm:h-10 rounded-full flex shrink-0 items-center justify-center hover:bg-black transition-colors shadow-sm p-0 border-none cursor-pointer"
               onClick={(e) => {
                 e.preventDefault();
                 setIsModalOpen(true);
               }}
               aria-label="Add to cart"
             >
-              <FaPlus size={12} />
+              <FaPlus size={14} />
             </Button>
           </div>
         </div>
-      </div>
+        </div>
+      </motion.div>
 
-      {/* Detail Modal */}
+      {/* Detail Modal (Lazy Loaded) */}
       {isModalOpen && (
         <Suspense fallback={null}>
           <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>

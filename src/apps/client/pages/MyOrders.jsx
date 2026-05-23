@@ -38,15 +38,21 @@ const MyOrders = () => {
     });
 
     return (
-        <div className="min-h-screen bg-gray-50 py-12 px-4 font-['Poppins']">
+        <div className="bg-gray-50 py-12 px-4 font-['Poppins']">
             <div className="max-w-4xl mx-auto">
-                <header className="mb-10 text-center sm:text-left">
+               
+                {/* Order List */}
+                <div className="space-y-6">
+                    {filteredOrders.length > 0 ? (
+                        filteredOrders.map((order) => (
+                            <>
+                             <header className="mb-4 sm:mb-10 text-center sm:text-left">
                     <h1 className="text-4xl font-bold font-['Playfair_Display'] text-gray-900 mb-2 !text-black">My Orders</h1>
                     <p className="text-gray-500">Track current deliveries and view your pizza history.</p>
                 </header>
 
                 {/* Tabs */}
-                <div className="flex justify-center sm:justify-start gap-2 mb-8 bg-white p-1.5 rounded-xl shadow-sm w-fit mx-auto sm:mx-0 border border-gray-100">
+                <div className="flex justify-center sm:justify-start gap-2 mb-4 sm:mb-8 bg-white p-1.5 rounded-xl shadow-sm w-fit mx-auto sm:mx-0 border border-gray-100">
                     {["all", "active", "delivered"].map((tab) => (
                         <button
                             key={tab}
@@ -61,13 +67,9 @@ const MyOrders = () => {
                     ))}
                 </div>
 
-                {/* Order List */}
-                <div className="space-y-6">
-                    {filteredOrders.length > 0 ? (
-                        filteredOrders.map((order) => (
                             <div
                                 key={order._id}
-                                className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow group animate-scale-in"
+                                className="bg-white rounded-2xl p-6 sm:shadow-sm border sm:border-gray-100 hover:shadow-md transition-shadow group animate-scale-in"
                             >
                                 <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6 border-b border-gray-50 pb-4">
                                     <div className="flex items-start gap-4">
@@ -120,9 +122,11 @@ const MyOrders = () => {
                                     )}
                                 </div>
                             </div>
+                            </>
+
                         ))
                     ) : (
-                        <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-200">
+                        <div className="text-center sm:py-20 bg-transparent sm:bg-white sm:rounded-3xl sm:border sm:border-dashed border-gray-200">
                             <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
                                 <ShoppingBag size={32} className="text-gray-400" />
                             </div>

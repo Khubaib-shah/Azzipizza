@@ -15,7 +15,8 @@ export default function Modal({ isOpen, onClose, children, className = "" }) {
 
       <div className="fixed inset-0 flex items-end sm:items-center justify-center p-0 sm:p-4 z-[9999] overflow-hidden">
         <DialogPanel
-          className={`bg-white p-0 rounded-t-[2rem] sm:rounded-[2rem] rounded-b-none sm:rounded-b-[2rem] w-full max-w-2xl relative max-h-[95vh] sm:max-h-[90vh] overflow-y-auto shadow-2xl ring-1 ring-black/5 ${className} transition-all duration-150 ease-out`}
+          transition
+          className={`bg-white p-0 rounded-t-[2rem] sm:rounded-[2rem] rounded-b-none sm:rounded-b-[2rem] w-full max-w-2xl relative max-h-[95vh] sm:max-h-[90vh] overflow-y-auto shadow-2xl ring-1 ring-black/5 ${className} transition-all duration-300 ease-out data-[closed]:translate-y-full sm:data-[closed]:translate-y-4 sm:data-[closed]:scale-95 data-[closed]:opacity-0`}
         >
           <button
             onClick={onClose}

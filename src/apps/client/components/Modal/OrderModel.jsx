@@ -277,7 +277,7 @@ function OrderModal({ isOpen, closeModal, totalPrice, cartItems }) {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={closeModal} className="max-w-4xl !p-0 !bg-transparent">
+    <Modal isOpen={isOpen} onClose={closeModal} className="max-w-4xl !p-0">
       {!isTime ? (
         <div className="text-center py-20 px-8 flex flex-col items-center">
           <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-8 animate-bounce">

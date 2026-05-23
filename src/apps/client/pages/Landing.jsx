@@ -1,6 +1,8 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useMemo, useRef, Fragment } from "react";
+import { Transition } from "@headlessui/react";
+import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { FaStar, FaFire, FaClock, FaShippingFast } from "react-icons/fa";
+import { FaStar, FaFire, FaClock, FaShippingFast, FaSearch, FaBars, FaTimes } from "react-icons/fa";
 import Context from "@shared/context/dataContext";
 import ProductCard from "../components/cards/ProductsCard";
 import ProductCardSkeleton from "../components/cards/ProductCardSkeleton";
@@ -13,6 +15,170 @@ function Landing() {
   const [featuredItems, setFeaturedItems] = useState([]);
   const [specialOffers, setSpecialOffers] = useState([]);
   const [weeklySpecials, setWeeklySpecials] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState("special-offers");
+  const [isFilterSticky, setIsFilterSticky] = useState(false);
+  const categoryRefs = useRef({});
+  const filterBlockRef = useRef(null);
+  const stickySentinelRef = useRef(null);
+  const tabsContainerRef = useRef(null);
+  const intersectingSectionsRef = useRef(new Map());
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+
+  const categoryNames = useMemo(
+    () => (items ? [...new Set(items.map((item) => item.category))] : []),
+    [items],
+  );
+
+  const specialSectionKeys = [
+    "special-offers",
+    "chef-specials",
+    "weekly-specials",
+  ];
+
+  const landingTabLabels = {
+    "special-offers": "Special Offers",
+    "chef-specials": "Chef's Specials",
+    "weekly-specials": "Weekly Specials",
+  };
+
+  const landingTabs = useMemo(
+    () => [...specialSectionKeys, ...categoryNames],
+    [categoryNames],
+  );
+
+  const isSpecialSectionTab = (category) =>
+    specialSectionKeys.includes(category);
+
+  const filteredLandingItems = useMemo(() => {
+    if (!items) return [];
+    let filtered = [...items];
+
+    if (searchQuery) {
+      filtered = filtered.filter(
+        (item) =>
+          item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.category.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
+    }
+
+    return filtered;
+  }, [items, searchQuery, activeCategory]);
+
+  const landingListing = useMemo(() => {
+    const result = {};
+
+    filteredLandingItems.forEach((item) => {
+      if (!result[item.category]) {
+        result[item.category] = [];
+      }
+      result[item.category].push(item);
+    });
+
+    return result;
+  }, [filteredLandingItems]);
+
+  const visibleLandingCategories = useMemo(
+    () => Object.keys(landingListing),
+    [landingListing],
+  );
+
+  const handleLandingCategoryClick = (category) => {
+    setActiveCategory(category);
+    const offset = 96;
+
+    const el = categoryRefs.current[category];
+    if (el) {
+      const topPos = el.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top: topPos, behavior: "smooth" });
+    }
+  };
+
+  useEffect(() => {
+    const sentinel = stickySentinelRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsFilterSticky(!entry.isIntersecting),
+      { root: null, rootMargin: "-80px 0px 0px 0px", threshold: 0 },
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (searchQuery || visibleLandingCategories.length === 0) return;
+
+    const activeSectionKeys = [
+      ...specialSectionKeys,
+      ...visibleLandingCategories,
+    ];
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        let changed = false;
+        entries.forEach((entry) => {
+          const category = entry.target.dataset.category;
+          if (entry.isIntersecting) {
+            intersectingSectionsRef.current.set(category, entry.intersectionRect.height);
+            changed = true;
+          } else {
+            intersectingSectionsRef.current.delete(category);
+            changed = true;
+          }
+        });
+
+        if (changed) {
+          let maxCategory = null;
+          let maxHeight = -1;
+          
+          intersectingSectionsRef.current.forEach((height, category) => {
+             if (height > maxHeight) {
+                maxHeight = height;
+                maxCategory = category;
+             }
+          });
+          
+          if (maxCategory) {
+             setActiveCategory((prev) => (prev !== maxCategory ? maxCategory : prev));
+          }
+        }
+      },
+      {
+        root: null,
+        rootMargin: "-25% 0px -25% 0px",
+        threshold: Array.from({ length: 21 }, (_, i) => i * 0.05),
+      },
+    );
+
+    activeSectionKeys.forEach((category) => {
+      const section = categoryRefs.current[category];
+      if (section) observer.observe(section);
+    });
+
+    return () => {
+      observer.disconnect();
+      intersectingSectionsRef.current.clear();
+    };
+  }, [searchQuery, visibleLandingCategories, specialOffers, featuredItems, weeklySpecials]);
+
+  useEffect(() => {
+    if (activeCategory && tabsContainerRef.current) {
+      const activeTabEl = document.getElementById(`tab-${activeCategory}`);
+      const container = tabsContainerRef.current;
+      if (activeTabEl && container) {
+        const containerRect = container.getBoundingClientRect();
+        const tabRect = activeTabEl.getBoundingClientRect();
+        const scrollOffset = tabRect.left - containerRect.left;
+        const targetScrollLeft = container.scrollLeft + scrollOffset - 12; // -12px for padding
+        
+        container.scrollTo({
+          left: targetScrollLeft,
+          behavior: "smooth"
+        });
+      }
+    }
+  }, [activeCategory]);
 
   useEffect(() => {
     if (items && items.length > 0) {
@@ -44,16 +210,99 @@ function Landing() {
       {/* Hero Section */}
       <HeroSection />
 
+      {/* Search The Menu */}
+      <div ref={stickySentinelRef} className="h-0 w-full" />
+      <section className="sticky top-12 md:top-20 z-40  bg-transparent pointer-events-none">
+        <div className="md:container mx-auto">
+          <div>
+            <div
+              ref={filterBlockRef}
+              className={`backdrop-blur-md pointer-events-auto w-full max-w-full transition-all duration-300 ${
+                isFilterSticky
+                  ? "shadow-xl border-red-200"
+                  : ""
+              }`}
+            >
+              <div className="px-2 py-1 sm:px-6 md:py-2">
+                <div className="grid grid-cols-1 gap-px md:gap-2">
+                  <div className="relative group">
+                    <FaSearch
+                      size={18}
+                      className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 text-red-500 group-focus-within:text-red-600 transition-colors z-10"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Search menu items, pizzas, and categories"
+                      className="pl-8 sm:pl-12 sm:pr-4 py-1.5 sm:py-3.5 w-full border-2 border-gray-100 rounded-2xl focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all bg-gray-50/50 hover:bg-white hover:border-red-200 text-gray-700 shadow-sm text-sm"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <style>{`
+                      .no-scrollbar::-webkit-scrollbar { display: none; }
+                      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+                    `}</style>
+                    <div 
+                      ref={tabsContainerRef}
+                      className="flex-1 overflow-x-auto no-scrollbar scroll-smooth"
+                    >
+                      <div className="flex gap-3 whitespace-nowrap p-1">
+                        {landingTabs.map((tab) => (
+                          <button
+                            key={tab}
+                            id={`tab-${tab}`}
+                            onClick={() => handleLandingCategoryClick(tab)}
+                            className={`relative px-3 sm:px-5 py-2 text-xs sm:text-sm rounded-full uppercase whitespace-nowrap transition-colors outline-none ${
+                              activeCategory === tab
+                                ? "text-white border border-transparent"
+                                : "bg-white text-gray-700 border border-gray-200 hover:border-red-300 hover:text-red-600"
+                            }`}
+                            style={{ WebkitTapHighlightColor: "transparent" }}
+                          >
+                            {activeCategory === tab && (
+                              <motion.div
+                                layoutId="landing-active-pill"
+                                className="absolute inset-0 bg-gradient-to-r from-red-600 to-red-700 rounded-full shadow-lg -z-10"
+                                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                              />
+                            )}
+                            <span className="relative z-10">{landingTabLabels[tab] || tab}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <button
+                      onClick={() => setIsCategoryModalOpen(true)}
+                      className="p-2.5 sm:p-3 bg-white border border-gray-200 rounded-full text-gray-600 shadow-sm shrink-0 hover:text-red-600 hover:border-red-300 transition-colors"
+                      aria-label="View all categories"
+                    >
+                      <FaBars size={16} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Special Offers Section */}
       {(isLoading || specialOffers.length > 0) && (
-        <section className="!py-2 md:py-16 bg-gradient-to-r from-red-50 to-amber-50">
-          <div className="container mx-auto px-px md:px-4">
+        <section
+          ref={(el) => el && (categoryRefs.current["special-offers"] = el)}
+          data-category="special-offers"
+          className="!py-2 md:py-16 bg-gradient-to-r from-red-50 to-amber-50"
+        >
+          <div className="sm:container mx-auto !px-2 md:px-4">
             <SectionHeader
               title="Special Offers"
               subtitle="Don't miss out on our exclusive deals and limited-time offers!"
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 mb-8">
               {isLoading
                 ? [...Array(3)].map((_, index) => (
                     <div key={index} className="animate-scale-in">
@@ -87,14 +336,18 @@ function Landing() {
 
       {/* Chef's Special Section */}
       {(isLoading || featuredItems.length > 0) && (
-        <section className="py-16">
-          <div className="container mx-auto px-px md:px-4">
+        <section
+          ref={(el) => el && (categoryRefs.current["chef-specials"] = el)}
+          data-category="chef-specials"
+          className="py-16"
+        >
+          <div className="sm:container mx-auto px-2 md:px-4">
             <SectionHeader
               title="Chef's Specials"
               subtitle="Handpicked by our master chefs"
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-4 md:mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-4 md:mb-8">
               {isLoading
                 ? [...Array(4)].map((_, index) => (
                     <div key={index} className="animate-slide-up">
@@ -128,14 +381,18 @@ function Landing() {
 
       {/* Weekly Specials Section */}
       {(isLoading || weeklySpecials.length > 0) && (
-        <section className="py-16 bg-gradient-to-br from-cream to-amber-50/50">
-          <div className="container mx-auto px-px md:px-4">
+        <section
+          ref={(el) => el && (categoryRefs.current["weekly-specials"] = el)}
+          data-category="weekly-specials"
+          className="py-16 bg-gradient-to-br from-cream to-amber-50/50"
+        >
+          <div className="sm:container mx-auto px-2 md:px-4">
             <SectionHeader
               title="Weekly Specials"
               subtitle="Taste something new this week with our unique, limited-time creations!"
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 mb-8">
               {isLoading
                 ? [...Array(3)].map((_, index) => (
                     <div key={index} className="animate-scale-in">
@@ -167,10 +424,52 @@ function Landing() {
         </section>
       )}
 
+      {/* Browse the Full Menu Section */}
+      <section className="py-10 md:py-16 bg-white/90">
+        <div className="sm:container mx-auto px-2 md:px-4">
+          {filteredLandingItems.length > 0 ? (
+            <div className="space-y-10">
+              {visibleLandingCategories.map((category) => (
+                <div
+                  key={category}
+                  ref={(el) => el && (categoryRefs.current[category] = el)}
+                  data-category={category}
+                  className="mt-10 mb-8"
+                >
+                  <SectionHeader
+                    title={category}
+                    subtitle={
+                      {
+                        "pizze rosse": "Classic tomato-based pizzas with rich, authentic flavors",
+                        "pizze bianche": "Delicate white pizzas without tomato sauce",
+                        "fritti": "Crispy golden fried bites, perfect for sharing",
+                        "dolci": "Sweet Italian desserts to end your meal perfectly",
+                        "bibite": "Refreshing drinks to complement your pizza",
+                        "birre": "Craft and classic beers to pair with your meal",
+                      }[category.toLowerCase()] || "Handcrafted with love and authentic Italian ingredients"
+                    }
+                  />
+                  <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {landingListing[category].map((item) => (
+                      <ProductCard key={item._id} product={item} />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-gray-500">
+                No matching dishes found. Try another search or select a different category.
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* Why Choose Us Section */}
       <section className="md:py-16 bg-gradient-to-br from-gray-50 to-white">
-        <div className="container mx-auto px-px md:px-4">
+        <div className="sm:container mx-auto px-2 md:px-4">
           <SectionHeader
             title="Why Choose Azzipizza?"
             subtitle="Experience the difference that passion and quality make"
@@ -233,7 +532,7 @@ function Landing() {
 
       {/* Testimonials Section */}
       <section className="py-4 md:py-16 bg-gradient-to-br from-amber-50 to-red-50">
-        <div className="container mx-auto px-px md:px-4">
+        <div className="sm:container mx-auto px-2 md:px-4">
           <SectionHeader
             title="What Our Customers Say"
             subtitle="Don't just take our word for it"
@@ -249,7 +548,7 @@ function Landing() {
                   />
                 ))}
               </div>
-              <p className="text-sm md:text-lg mb-4 italic">
+              <p className="text-sm md:text-xs mb-4 italic">
                 "The best pizza in Bologna! The crust is perfect, ingredients
                 are fresh, and the flavors are incredible. Highly recommended!"
               </p>
@@ -265,7 +564,7 @@ function Landing() {
                   />
                 ))}
               </div>
-              <p className="text-sm md:text-lg mb-4 italic">
+              <p className="text-sm md:text-xs mb-4 italic">
                 "Authentic Italian pizza made with love. You can taste the
                 quality in every bite. Fast delivery too!"
               </p>
@@ -281,7 +580,7 @@ function Landing() {
                   />
                 ))}
               </div>
-              <p className="text-sm md:text-lg mb-4 italic">
+              <p className="text-sm md:text-xs mb-4 italic">
                 "Amazing pizza! The wood-fired oven makes all the difference.
                 This is now my go-to pizzeria!"
               </p>
@@ -293,7 +592,7 @@ function Landing() {
 
       {/* CTA Section */}
       <section className="py-8 md:py-20 bg-gradient-to-br from-amber-50 to-orange-50">
-        <div className="container mx-auto px-px md:px-4 text-center">
+        <div className="sm:container mx-auto px-2 md:px-4 text-center">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-2 md:mb-6">
             Ready to Order?
           </h2>
@@ -317,6 +616,62 @@ function Landing() {
           </div>
         </div>
       </section>
+
+      <Transition show={isCategoryModalOpen} as={Fragment}>
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <Transition.Child
+            as={Fragment}
+            enter="transition-opacity duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="transition-opacity duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsCategoryModalOpen(false)} />
+          </Transition.Child>
+
+          <Transition.Child
+            as={Fragment}
+            enter="transition ease-out duration-300 transform"
+            enterFrom="translate-y-full sm:translate-y-4 sm:scale-95 opacity-0"
+            enterTo="translate-y-0 sm:scale-100 opacity-100"
+            leave="transition ease-in duration-200 transform"
+            leaveFrom="translate-y-0 sm:scale-100 opacity-100"
+            leaveTo="translate-y-full sm:translate-y-4 sm:scale-95 opacity-0"
+          >
+            <div className="bg-white w-full sm:max-w-md sm:rounded-3xl rounded-t-3xl shadow-2xl overflow-hidden relative z-10 flex flex-col max-h-[85vh]">
+              <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50 shrink-0">
+                <h3 className="font-bold text-lg text-gray-900">Menu Categories</h3>
+                <button 
+                  onClick={() => setIsCategoryModalOpen(false)}
+                  className="p-2 text-gray-400 hover:bg-gray-200 hover:text-gray-700 rounded-full transition-colors"
+                >
+                  <FaTimes size={18} />
+                </button>
+              </div>
+              <div className="overflow-y-auto p-4 flex flex-col gap-2 pb-8">
+                {landingTabs.map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => {
+                      handleLandingCategoryClick(tab);
+                      setIsCategoryModalOpen(false);
+                    }}
+                    className={`w-full text-left px-4 py-3 rounded-xl font-medium transition-colors ${
+                      activeCategory === tab
+                        ? "bg-red-50 text-red-600 border border-red-100"
+                        : "bg-white text-gray-700 border border-gray-100 hover:bg-gray-50 hover:border-gray-300"
+                    }`}
+                  >
+                    {landingTabLabels[tab] || tab.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </Transition.Child>
+        </div>
+      </Transition>
     </div>
   );
 }

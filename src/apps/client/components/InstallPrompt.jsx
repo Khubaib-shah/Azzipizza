@@ -15,13 +15,24 @@ export default function InstallPrompt() {
     if (window.matchMedia("(display-mode: standalone)").matches) return;
     if (navigator.standalone) return; // iOS
 
-    // Don't show if recently dismissed
-    const dismissed = localStorage.getItem(DISMISS_KEY);
-    if (dismissed && Date.now() - parseInt(dismissed, 10) < DISMISS_DURATION_MS) return;
+    const isRecentlyDismissed = () => {
+      const dismissed = localStorage.getItem(DISMISS_KEY);
+      return dismissed && Date.now() - parseInt(dismissed, 10) < DISMISS_DURATION_MS;
+    };
 
     const handler = (e) => {
+      if (isRecentlyDismissed()) return;
       e.preventDefault();
       setDeferredPrompt(e);
+      
+      if (localStorage.getItem("showInstallPromptAfterOrder") === "true") {
+        setTimeout(() => {
+          setShowPrompt(true);
+          localStorage.removeItem("showInstallPromptAfterOrder");
+        }, 1500);
+      } else if (window.location.pathname === "/") {
+        setShowPrompt(true);
+      }
     };
 
     window.addEventListener("beforeinstallprompt", handler);
@@ -31,15 +42,18 @@ export default function InstallPrompt() {
   const location = useLocation();
 
   useEffect(() => {
+    if (!deferredPrompt) return;
+
+    if (localStorage.getItem("showInstallPromptAfterOrder") === "true") {
+      setTimeout(() => {
+        setShowPrompt(true);
+        localStorage.removeItem("showInstallPromptAfterOrder");
+      }, 1500);
+      return;
+    }
+
     if (location.pathname === "/") {
-      if (localStorage.getItem("showInstallPromptAfterOrder") === "true") {
-        if (deferredPrompt) {
-          setTimeout(() => {
-            setShowPrompt(true);
-            localStorage.removeItem("showInstallPromptAfterOrder");
-          }, 1500);
-        }
-      }
+      setShowPrompt(true);
     }
   }, [location.pathname, deferredPrompt]);
 

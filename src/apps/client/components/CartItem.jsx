@@ -9,7 +9,7 @@ const CartItem = ({ item, onQuantityChange, onRemove }) => {
   const itemTotal = item.price * item.quantity;
 
   return (
-    <div className="card-premium p-6 flex flex-col sm:flex-row gap-6 relative group bg-white">
+    <div className="card-premium p-2 sm:p-6 flex flex-col sm:flex-row gap-2 sm:gap-6 relative group bg-white">
       <div className="w-full sm:w-36 h-36 flex-shrink-0 overflow-hidden rounded-[var(--radius-md)] shadow-sm relative">
         <img
           src={item.image}
