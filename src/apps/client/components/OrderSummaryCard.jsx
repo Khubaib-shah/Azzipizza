@@ -1,4 +1,3 @@
-import React from "react";
 import { ShoppingBag } from "lucide-react";
 import { Button } from "@shared/components/ui/button";
 
@@ -6,12 +5,12 @@ const OrderSummaryCard = ({ cartItems, cartTotal, onCheckout }) => {
   const totalItemCount = cartItems.reduce((acc, i) => acc + i.quantity, 0);
 
   return (
-    <div className="glass p-6 md:p-8 rounded-[var(--radius-lg)] sticky top-24 shadow-[var(--shadow-lg)] border-t-4 border-t-[var(--color-accent)] bg-white/90 backdrop-blur-sm">
-      <h3 className="text-2xl font-['Playfair_Display'] font-bold text-[var(--color-text)] mb-6 flex items-center gap-2">
+    <div className="p-2 sm:p-6 md:p-8 rounded-[var(--radius-lg)] sticky top-24 shadow-[var(--shadow-lg)] border-t-4 border-t-[var(--color-accent)] bg-white/90 backdrop-blur-sm">
+      <h3 className="text-2xl font-['Playfair_Display'] font-bold text-[var(--color-text)] mb-2 sm:mb-4 md:mb-6 flex items-center gap-2">
         Order Summary
       </h3>
 
-      <div className="space-y-4 mb-8 font-['Poppins']">
+      <div className="space-y-1 md:space-y-4 mb-2 sm:mb-4 md:mb-8 font-['Poppins']">
         <div className="flex justify-between text-[var(--color-text-light)]">
           <span>
             Subtotal <span className="text-xs">({totalItemCount} items)</span>

@@ -30,12 +30,12 @@ function Cart() {
   }, 0);
 
   return (
-    <div className="sm:container mx-auto sm:px-4 py-12 max-w-7xl relative z-10">
+    <div className="sm:container mx-auto sm:px-4 pt-12 max-w-7xl relative z-10">
       <div className="flex items-center gap-4 sm:mb-10 border-b border-amber-500 pb-4">
         <div className="bg-amber-50 p-3 rounded-full">
           <ShoppingBag size={32} className="text-red-600" />
         </div>
-        <h1 className="text-4xl md:text-5xl font-bold !text-gray-900 font-serif">
+        <h1 className="!text-3xl md:text-5xl font-bold !text-gray-900 font-serif">
           Your Cart
         </h1>
       </div>
@@ -56,8 +56,8 @@ function Cart() {
           </Link>
         </div>
       ) : (
-        <div className="px-2 grid grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-8 items-start">
-          <div className="lg:col-span-2 sm:space-y-6 grid gap-2  grid-cols-2 sm:grid-cols-1">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-8 items-start">
+          <div className="px-2 lg:col-span-2 sm:space-y-6 grid gap-2  grid-cols-2 sm:grid-cols-1">
             {cartItems.map((item) => (
               <CartItem
                 key={`${item._id}-${JSON.stringify(
