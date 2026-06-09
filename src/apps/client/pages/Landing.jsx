@@ -247,7 +247,7 @@ function Landing() {
   }, [items]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-cream to-white overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-cream to-white">
       {/* Hero Section */}
       <HeroSection />
 
