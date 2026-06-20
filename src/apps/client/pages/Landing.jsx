@@ -578,7 +578,7 @@ function Landing() {
           />
 
           {/* EMBLA */}
-          <div className="pt-8 lg:pt-12 px-6" ref={emblaRef}>
+          <div className="pt-8 lg:pt-12 px-6 overflow-x-hidden" ref={emblaRef}>
             <div className="flex">
 
               {testimonials.map((t, i) => (
