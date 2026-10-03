@@ -22,7 +22,7 @@ const OrderModal = ({ order, eta, onClose }) => {
               <p className="text-sm font-medium text-gray-900">{order.name}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Contact</p>
+              <p className="!text-sm text-gray-500">Contact</p>
               <p className="text-sm font-medium text-gray-900">
                 {order.phoneNumber || "N/A"}
               </p>

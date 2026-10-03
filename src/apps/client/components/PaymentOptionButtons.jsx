@@ -9,8 +9,8 @@ export function PaymentModal({ isSubmitting, handleOrderSubmit, totalPrice }) {
   const paymentOptions = [
     { value: "cash", label: "Cash", icon: Banknote },
     { value: "scan", label: "Satispay", icon: Smartphone },
-    { value: "bancomat", label: "Card", icon: CreditCard },
-    { value: "paypal", label: "Online", icon: CreditCard },
+    { value: "bancomat", label: "Pos alla consegna", icon: CreditCard },
+    { value: "paypal", label: "paga online", icon: CreditCard },
   ];
 
   console.log('handleOrderSubmit', handleOrderSubmit)
@@ -52,11 +52,11 @@ export function PaymentModal({ isSubmitting, handleOrderSubmit, totalPrice }) {
                     {isSelected && qrCodeModal ? (
                       <div className="w-full h-full bg-orange-50/50" />
                     ) : (
-                      <motion.img 
+                      <motion.img
                         layoutId="satispay-qr"
-                        src="/QrCode.jpeg" 
-                        alt="Satispay" 
-                        className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity" 
+                        src="/QrCode.jpeg"
+                        alt="Satispay"
+                        className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity"
                       />
                     )}
                   </div>

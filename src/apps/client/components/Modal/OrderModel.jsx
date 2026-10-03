@@ -300,7 +300,7 @@ function OrderModal({ isOpen, closeModal, totalPrice, cartItems }) {
         <div className="flex flex-col lg:flex-row h-full font-['Poppins'] overflow-hidden">
           <div className="flex-1 p-6 lg:p-10 overflow-y-auto max-h-[85vh] hide-scrollbar bg-white rounded-t-3xl lg:rounded-l-3xl lg:rounded-tr-none">
             <div className="mb-8 flex items-baseline gap-4">
-              <h2 className="text-4xl lg:text-5xl font-black text-slate-800 font-serif tracking-tight">
+              <h2 className="!text-4xl lg:text-5xl !font-black text-slate-800 font-serif tracking-tight">
                 Checkout
               </h2>
               <span className="text-sm font-medium text-slate-400">Fill details</span>
@@ -308,7 +308,7 @@ function OrderModal({ isOpen, closeModal, totalPrice, cartItems }) {
 
             <div className="space-y-4">
               <section className="space-y-4">
-                <h3 className="text-2xl font-black text-slate-800 font-serif tracking-widest flex items-center gap-3">
+                <h3 className="!text-2xl font-black text-slate-800 font-serif tracking-widest flex items-center gap-3">
                   <User size={20} className="text-slate-600" /> CONTACT
                 </h3>
                 <div className="grid grid-cols-2 gap-3">
@@ -334,7 +334,7 @@ function OrderModal({ isOpen, closeModal, totalPrice, cartItems }) {
               </section>
 
               <section className="space-y-4 pt-6">
-                <h3 className="text-2xl font-black text-slate-800 font-serif tracking-widest flex items-center gap-3">
+                <h3 className="!text-2xl font-black text-slate-800 font-serif tracking-widest flex items-center gap-3">
                   <MapPin size={20} className="text-slate-600" /> DELIVERY ADDRESS
                 </h3>
                 <div className="space-y-3">
@@ -391,7 +391,7 @@ function OrderModal({ isOpen, closeModal, totalPrice, cartItems }) {
               </section>
 
               <section className="space-y-4 pt-6">
-                <h3 className="text-2xl font-black text-slate-800 font-serif tracking-widest flex items-center gap-3">
+                <h3 className="!text-2xl font-black text-slate-800 font-serif tracking-widest flex items-center gap-3">
                   <Clock size={20} className="text-slate-600" /> TIME & NOTES
                 </h3>
                 <div className="grid grid-cols-2 gap-3">

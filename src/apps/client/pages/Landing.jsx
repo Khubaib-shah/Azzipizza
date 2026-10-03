@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState, useMemo, useRef, Fragment } from "react";
 import { Transition } from "@headlessui/react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { FaStar, FaFire, FaClock, FaShippingFast, FaSearch, FaBars, FaTimes } from "react-icons/fa";
 import Context from "@shared/context/dataContext";
 import ProductCard from "../components/cards/ProductsCard";
@@ -44,6 +44,21 @@ function Landing() {
   const [specialOffers, setSpecialOffers] = useState([]);
   const [weeklySpecials, setWeeklySpecials] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash === '#full-menu') {
+      setTimeout(() => {
+        const element = document.getElementById('full-menu');
+        if (element) {
+          const offset = 96;
+          const topPos = element.getBoundingClientRect().top + window.scrollY - offset;
+          window.scrollTo({ top: topPos, behavior: "smooth" });
+        }
+      }, 100);
+    }
+  }, [location]);
+
   const [activeCategory, setActiveCategory] = useState("special-offers");
   const [isFilterSticky, setIsFilterSticky] = useState(false);
   const categoryRefs = useRef({});
@@ -358,17 +373,6 @@ function Landing() {
                   </div>
                 ))}
             </div>
-
-            {!isLoading && (
-              <div className="text-center">
-                <Link
-                  to="/menu"
-                  className="btn-primary inline-block text-sm md:text-lg px-8 !py-2 md:py-4"
-                >
-                  View All Offers →
-                </Link>
-              </div>
-            )}
           </div>
         </section>
       )}
@@ -403,17 +407,6 @@ function Landing() {
                   </div>
                 ))}
             </div>
-
-            {!isLoading && (
-              <div className="text-center">
-                <Link
-                  to="/menu"
-                  className="btn-accent !text-white inline-block text-sm md:text-lg md:px-8 !py-3 md:py-4"
-                >
-                  Explore Full Menu →
-                </Link>
-              </div>
-            )}
           </div>
         </section>
       )}
@@ -448,23 +441,12 @@ function Landing() {
                   </div>
                 ))}
             </div>
-
-            {!isLoading && (
-              <div className="text-center">
-                <Link
-                  to="/menu"
-                  className="btn-accent !text-white inline-block text-sm md:text-lg md:px-8 !py-3 md:py-4"
-                >
-                  Order Weekly Specials →
-                </Link>
-              </div>
-            )}
           </div>
         </section>
       )}
 
       {/* Browse the Full Menu Section */}
-      <section className="py-10 md:py-16 bg-white/90">
+      <section id="full-menu" className="py-10 md:py-16 bg-white/90">
         <div className="sm:container mx-auto px-2 md:px-4">
           {filteredLandingItems.length > 0 ? (
             <div className="space-y-10">
@@ -655,7 +637,7 @@ function Landing() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link
-              to="/menu"
+              to="/#full-menu"
               className="btn-primary text-sm !font-medium md:text-lg !px-6 md:!px-10 !py-3 md:py-5"
             >
               <span>Order Now</span>

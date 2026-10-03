@@ -12,6 +12,7 @@ Azzipizza is a modern, responsive pizza ordering frontend built with React, Tail
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
 - [Environment Variables](#environment-variables)
+- [Documentation](#documentation)
 - [Available Scripts](#available-scripts)
 - [Future Enhancements](#future-enhancements)
 - [Author](#author)
@@ -104,6 +105,12 @@ VITE_BASE_URL_PRO=https://your-production-backend.example.com
 ```
 
 Use `VITE_BASE_URL_DEV` for local development and `VITE_BASE_URL_PRO` for production builds.
+
+---
+
+## Documentation
+
+- [Reliable Sound Notifications in Web Applications](docs/browser-audio-notifications.md) — reusable autoplay-unlock, fallback, and cross-tab coordination pattern
 
 ---
 

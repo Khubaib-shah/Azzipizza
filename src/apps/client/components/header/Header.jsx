@@ -52,11 +52,6 @@ function Header() {
       icon: <AiOutlineHome className="text-[24px]" />,
     },
     {
-      path: "/menu",
-      label: "Menu",
-      icon: <PiListBulletsBold className="text-[24px]" />,
-    },
-    {
       path: "/about",
       label: "About Us",
       icon: <AiOutlineInfoCircle className="text-[24px]" />,

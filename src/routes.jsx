@@ -4,7 +4,6 @@ import { lazy, Suspense } from "react";
 // Client App Components
 import ClientApp from "./apps/client/App";
 const Landing = lazy(() => import("./apps/client/pages/Landing"));
-const Menu = lazy(() => import("./apps/client/pages/Menu"));
 const About = lazy(() => import("./apps/client/pages/About"));
 const Contact = lazy(() => import("./apps/client/pages/ContactUs"));
 const MyOrders = lazy(() => import("./apps/client/pages/MyOrders"));
@@ -45,7 +44,6 @@ const router = createBrowserRouter([
     ),
     children: [
       { path: "/", element: <Landing /> },
-      { path: "menu", element: <Menu /> },
       { path: "about", element: <About /> },
       { path: "contact", element: <Contact /> },
       { path: "cart", element: <Cart /> },

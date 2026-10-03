@@ -30,8 +30,6 @@ export default function InstallPrompt() {
           setShowPrompt(true);
           localStorage.removeItem("showInstallPromptAfterOrder");
         }, 1500);
-      } else if (window.location.pathname === "/") {
-        setShowPrompt(true);
       }
     };
 
@@ -50,10 +48,6 @@ export default function InstallPrompt() {
         localStorage.removeItem("showInstallPromptAfterOrder");
       }, 1500);
       return;
-    }
-
-    if (location.pathname === "/") {
-      setShowPrompt(true);
     }
   }, [location.pathname, deferredPrompt]);
 

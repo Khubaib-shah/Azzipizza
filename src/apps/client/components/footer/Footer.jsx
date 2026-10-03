@@ -74,7 +74,7 @@ function Footer() {
               </li>
               <li>
                 <Link
-                  to="/menu"
+                  to="/#full-menu"
                   className="footer-link text-gray-700 flex items-center gap-2 text-sm font-medium"
                 >
                   <span className="text-red-600">▸</span> Our Menu
@@ -196,7 +196,7 @@ function Footer() {
           <p className="text-gray-600">
             Developed by{" "}
             <a
-              href="http://khubaib-portfolio-seven.vercel.app"
+              href="http://thekhubaib.me"
               target="_blank"
               rel="noopener noreferrer"
               className="footer-link text-red-600 font-semibold"

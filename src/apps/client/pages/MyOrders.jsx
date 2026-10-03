@@ -132,7 +132,7 @@ const MyOrders = () => {
                             </div>
                             <h3 className="text-xl font-bold text-gray-800 mb-2">No orders found</h3>
                             <p className="text-gray-500 mb-8">Looks like you haven't ordered any pizzas yet!</p>
-                            <Link to="/menu" className="btn-primary px-8 py-3 rounded-xl font-bold inline-flex items-center gap-2">
+                            <Link to="/#full-menu" className="btn-primary px-8 py-3 rounded-xl font-bold inline-flex items-center gap-2">
                                 Browse Menu <ArrowRight size={18} />
                             </Link>
                         </div>

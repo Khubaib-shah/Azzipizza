@@ -118,7 +118,7 @@ export default function HeaderModal({ open, setOpen, navItems }) {
                       {/* CTA */}
                       <div className="mt-8">
                         <Link
-                          to="/menu"
+                          to="/#full-menu"
                           onClick={() => setOpen(false)}
                           className="flex items-center justify-center w-full py-4 bg-[var(--color-primary)] text-white rounded-xl font-bold shadow-lg shadow-red-200 btn-primary hover:-translate-y-1 transition-all"
                         >

@@ -63,7 +63,7 @@ function HeroSection() {
           style={{ animationDelay: "0.5s" }}
         >
           <button
-            onClick={() => (window.location.href = "/menu")}
+            onClick={() => (window.location.href = "/#full-menu")}
             className="btn-primary !text-sm md:!text-lg !px-5 !py-3 md:!px-8 md:!py-4 transform hover:scale-105 transition-all duration-300 cursor-pointer"
           >
             Order Now

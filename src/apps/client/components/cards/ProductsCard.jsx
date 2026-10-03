@@ -93,84 +93,84 @@ const ProductCard = memo(({ product }) => {
           onClick={() => setIsModalOpen(true)}
           style={{ contain: "layout" }}
         >
-        {/* Badges */}
-        <div className="absolute top-2 left-2 z-10 flex flex-col gap-1.5">
-          {discount > 0 && (
-            <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
-              -{discount}%
-            </span>
-          )}
-          {isChefSpecial && (
-            <span className="bg-amber-400 text-black text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1">
-              <FaStar size={8} /> Special
-            </span>
-          )}
-        </div>
-
-        {/* Image Container */}
-        <div className="relative aspect-[4/3] overflow-hidden bg-gray-50">
-          <img
-            loading="lazy"
-            decoding="async"
-            src={getOptimizedImageUrl(product.image, 400)}
-            alt={product.name}
-            className="w-full h-full object-cover transition-transform duration-500 lg:group-hover:scale-110"
-          />
-
-          {/* Quick View Overlay (Desktop only) */}
-          <div className="absolute inset-0 bg-black/20 opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 hidden lg:flex items-end justify-center pb-4">
-            <Button
-              className="bg-white text-gray-800 text-xs font-bold px-4 py-2 rounded-full shadow-lg transform translate-y-4 lg:group-hover:translate-y-0 transition-transform duration-300 hover:bg-[var(--color-primary)] hover:text-white border-none"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsModalOpen(true);
-              }}
-            >
-              Quick View
-            </Button>
+          {/* Badges */}
+          <div className="absolute top-2 left-2 z-10 flex flex-col gap-1.5">
+            {discount > 0 && (
+              <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                -{discount}%
+              </span>
+            )}
+            {isChefSpecial && (
+              <span className="bg-amber-400 text-black text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1">
+                <FaStar size={8} /> Special
+              </span>
+            )}
           </div>
-        </div>
 
-        {/* Content */}
-        <div className="p-2 sm:p-4 flex flex-col flex-grow">
-          <div className="flex justify-between items-start mb-2 gap-2">
-            <h3 className="!font-bold text-gray-900 !text-sm sm:text-xl text-nowrap font-['Playfair_Display'] leading-tight line-clamp-2 lg:group-hover:text-[var(--color-primary)] transition-colors">
-              {product.name}
-            </h3>
-            <div className="hidden md:flex shrink-0 items-center gap-1 text-[10px] sm:text-xs text-gray-600 bg-gray-50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md border border-gray-100 mt-0.5">
-              <FaStar className="text-amber-400" size={10} />
-              <span className="font-medium">{rating}</span>
+          {/* Image Container */}
+          <div className="relative aspect-[4/3] overflow-hidden bg-gray-50">
+            <img
+              loading="lazy"
+              decoding="async"
+              src={getOptimizedImageUrl(product.image, 400)}
+              alt={product.name}
+              className="w-full h-full object-cover transition-transform duration-500 lg:group-hover:scale-110"
+            />
+
+            {/* Quick View Overlay (Desktop only) */}
+            <div className="absolute inset-0 bg-black/20 opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 hidden lg:flex items-end justify-center pb-4">
+              <Button
+                className="bg-white text-gray-800 text-xs font-bold px-4 py-2 rounded-full shadow-lg transform translate-y-4 lg:group-hover:translate-y-0 transition-transform duration-300 hover:bg-[var(--color-primary)] hover:text-white border-none"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsModalOpen(true);
+                }}
+              >
+                Quick View
+              </Button>
             </div>
           </div>
 
-          {/* <p className="text-[11px] sm:text-sm text-gray-500 line-clamp-2 mb-3 sm:mb-4 leading-relaxed flex-grow">
+          {/* Content */}
+          <div className="p-2 sm:p-4 flex flex-col flex-grow">
+            <div className="flex justify-between items-start mb-2 gap-2">
+              <h3 className="!font-bold text-gray-900 !text-sm sm:text-xl text-nowrap font-['Playfair_Display'] leading-tight line-clamp-2 lg:group-hover:text-[var(--color-primary)] transition-colors">
+                {product.name}
+              </h3>
+              <div className="hidden md:flex shrink-0 items-center gap-1 text-[10px] sm:text-xs text-gray-600 bg-gray-50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md border border-gray-100 mt-0.5">
+                <FaStar className="text-amber-400" size={10} />
+                <span className="font-medium">{rating}</span>
+              </div>
+            </div>
+
+            {/* <p className="text-[11px] sm:text-sm text-gray-500 line-clamp-2 mb-3 sm:mb-4 leading-relaxed flex-grow">
             {product.description}
           </p> */}
 
-          <div className="flex items-end justify-between mt-auto  sm:pt-4 border-t border-gray-50 border-dashed">
-            <div className="flex flex-col">
-              {discount > 0 && (
-                <span className="text-[10px] sm:text-xs text-gray-400 line-through mb-0.5">
-                  €{basePrice.toFixed(2)}
+            <div className="flex items-end justify-between mt-auto  sm:pt-4 border-t border-gray-50 border-dashed">
+              <div className="flex flex-col">
+                {discount > 0 && (
+                  <span className="text-[10px] sm:text-xs text-gray-400 line-through mb-0.5">
+                    €{basePrice.toFixed(2)}
+                  </span>
+                )}
+                <span className="font-bold text-base sm:text-xl text-[var(--color-primary)] leading-none">
+                  €{discountedPrice.toFixed(2)}
                 </span>
-              )}
-              <span className="font-bold text-base sm:text-xl text-[var(--color-primary)] leading-none">
-                €{discountedPrice.toFixed(2)}
-              </span>
-            </div>
+              </div>
 
-            <Button
-              className="bg-[var(--color-primary)] text-white w-9 h-9 sm:w-10 sm:h-10 rounded-full flex shrink-0 items-center justify-center hover:bg-black transition-colors shadow-sm p-0 border-none cursor-pointer"
-              onClick={(e) => {
-                e.preventDefault();
-                setIsModalOpen(true);
-              }}
-              aria-label="Add to cart"
-            >
-              <FaPlus size={14} />
-            </Button>
+              <Button
+                className="bg-[var(--color-primary)] text-white w-9 h-9 sm:w-10 sm:h-10 rounded-full flex shrink-0 items-center justify-center hover:bg-black transition-colors shadow-sm p-0 border-none cursor-pointer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsModalOpen(true);
+                }}
+                aria-label="Add to cart"
+              >
+                <FaPlus size={14} />
+              </Button>
+            </div>
           </div>
-        </div>
         </div>
       </motion.div>
 
@@ -203,7 +203,7 @@ const ProductCard = memo(({ product }) => {
               {/* Content Side */}
               <div className="flex-1 p-6 md:p-8 flex flex-col overflow-y-auto">
                 <div className="mb-4">
-                  <h2 className="text-3xl font-bold font-['Playfair_Display'] text-gray-900 mb-2">
+                  <h2 className="!text-3xl font-bold font-['Playfair_Display'] text-gray-900 mb-2">
                     {product.name}
                   </h2>
                   <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -223,7 +223,7 @@ const ProductCard = memo(({ product }) => {
                 {/* Toppings Section */}
                 {product.ingredients?.length > 0 && (
                   <div className="mb-6">
-                    <h3 className="font-bold text-gray-800 mb-3 text-sm uppercase tracking-wider">
+                    <h3 className="font-bold text-gray-800 mb-3 !text-sm tracking-wider">
                       Customize Extras
                     </h3>
                     <motion.div
