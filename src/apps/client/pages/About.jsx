@@ -1,5 +1,3 @@
-import React from "react";
-import pizzaImage from "../assets/logo-pizza.png";
 import ingredientsImage from "../assets/hero-image.jpg";
 import Team from "../assets/meet-our.png";
 import { FaAward, FaHeart, FaLeaf } from "react-icons/fa";
