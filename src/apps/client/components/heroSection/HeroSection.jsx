@@ -42,11 +42,11 @@ function HeroSection() {
         {/* Main Heading */}
         <div className="animate-slide-down">
           <h1 className="!text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold drop-shadow-2xl leading-tight max-w-4xl md:mb-4">
-            Azzipizza
+            Azzipizza<span className="block text-2xl sm:text-3xl font-serif mt-2">La Tua Pizzeria a Bologna</span>
           </h1>
-          <p className="text-amber-300 text-2xl sm:text-3xl md:text-4xl font-serif italic mb-2">
+          <h2 className="text-amber-300 text-xl sm:text-2xl md:text-3xl font-serif italic mb-2">
             Mica Pizza e Fichi
-          </p>
+          </h2>
         </div>
 
         {/* Tagline */}
@@ -54,7 +54,7 @@ function HeroSection() {
           className="text-white/90 text-lg sm:text-xl md:text-2xl font-light max-w-2xl mb-3 md:mb-8 animate-fade-in"
           style={{ animationDelay: "0.3s" }}
         >
-          Authentic Italian Pizza, Crafted with Passion
+          Autentica pizza artigianale e fritti caldi, zona Centro Storico e Saragozza.
         </p>
 
         {/* CTA Buttons */}

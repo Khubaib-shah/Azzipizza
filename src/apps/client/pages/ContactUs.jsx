@@ -47,10 +47,10 @@ const Contact = () => {
         <div className="container mx-auto px-4 text-center">
           <div className="animate-slide-down">
             <h1 className="text-5xl md:text-6xl font-bold mb-4">
-              Get in Touch
+              Contattaci
             </h1>
             <p className="text-xl md:text-2xl text-amber-200 italic max-w-3xl mx-auto">
-              We'd love to hear from you! Questions, feedback, or special requests - we're here to help.
+              Siamo qui per te! Domande, feedback o ordini speciali per le tue pizze e fritti da asporto a Bologna.
             </p>
           </div>
         </div>
@@ -63,12 +63,12 @@ const Contact = () => {
           <div className="card-premium p-8 animate-slide-up">
             <div className="flex items-center gap-3 mb-6">
               <div className="decorative-line flex-grow max-w-[50px]"></div>
-              <h2 className="text-3xl font-bold text-gray-800">Send a Message</h2>
+              <h2 className="text-3xl font-bold text-gray-800">Invia un Messaggio</h2>
             </div>
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div>
                 <label className="block text-gray-700 font-semibold mb-2">
-                  Your Name
+                  Il Tuo Nome
                 </label>
                 <input
                   type="text"
@@ -82,7 +82,7 @@ const Contact = () => {
               </div>
               <div>
                 <label className="block text-gray-700 font-semibold mb-2">
-                  Your Email
+                  La Tua Email
                 </label>
                 <input
                   type="email"
@@ -96,11 +96,11 @@ const Contact = () => {
               </div>
               <div>
                 <label className="block text-gray-700 font-semibold mb-2">
-                  Your Message
+                  Il Tuo Messaggio
                 </label>
                 <textarea
                   name="message"
-                  placeholder="Tell us how we can help you..."
+                  placeholder="Dicci come possiamo aiutarti..."
                   rows="5"
                   value={formData.message}
                   onChange={handleChange}
@@ -113,7 +113,7 @@ const Contact = () => {
                 className="btn-primary w-full flex items-center justify-center gap-2 text-lg"
               >
                 <FaWhatsapp size={24} />
-                Send via WhatsApp
+                Invia tramite WhatsApp
               </button>
             </form>
           </div>
@@ -127,7 +127,7 @@ const Contact = () => {
                 </div>
                 <div className="flex-1">
                   <h3 className="text-xl font-bold text-red-700 mb-2">
-                    Our Location
+                    Dove Siamo
                   </h3>
                   <a
                     href="https://maps.app.goo.gl/R5K5RN5gCXK7TSox9"
@@ -149,7 +149,7 @@ const Contact = () => {
                 </div>
                 <div className="flex-1">
                   <h3 className="text-xl font-bold text-green-700 mb-2">
-                    Call Us
+                    Chiamaci
                   </h3>
                   <a
                     href="tel:393713985810"
@@ -168,7 +168,7 @@ const Contact = () => {
                 </div>
                 <div className="flex-1">
                   <h3 className="text-xl font-bold text-purple-700 mb-2">
-                    Email Us
+                    Scrivici
                   </h3>
                   <a
                     href="mailto:azzipizzamicapizzaefichi@gmail.com"
@@ -187,11 +187,11 @@ const Contact = () => {
                 </div>
                 <div className="flex-1">
                   <h3 className="text-xl font-bold text-amber-700 mb-2">
-                    Opening Hours
+                    Orari di Apertura
                   </h3>
                   <div className="text-gray-700 space-y-1">
-                    <p>🕐 Mon-Fri: 11:00 AM - 11:00 PM</p>
-                    <p>🕐 Sat-Sun: 12:00 PM - 12:00 AM</p>
+                    <p>🕐 Mar-Dom: 18:00 - 23:00</p>
+                    <p>🕐 Lunedì: Chiuso</p>
                   </div>
                 </div>
               </div>
@@ -204,12 +204,12 @@ const Contact = () => {
           <div className="flex items-center justify-center gap-4 mb-6">
             <div className="decorative-line flex-grow max-w-[100px]"></div>
             <h2 className="text-4xl font-bold text-gray-800">
-              Follow Us on Social Media
+              Seguici sui Social
             </h2>
             <div className="decorative-line flex-grow max-w-[100px]"></div>
           </div>
           <p className="text-gray-700 text-lg mb-8 max-w-2xl mx-auto">
-            Stay updated with our latest pizzas, special offers, and behind-the-scenes content!
+            Resta aggiornato sulle nostre nuove pizze da asporto, offerte speciali e novità!
           </p>
           <div className="flex justify-center gap-6">
             <a
@@ -235,7 +235,7 @@ const Contact = () => {
                 <FaWhatsapp className="text-white text-5xl" />
               </div>
               <p className="mt-3 font-semibold text-gray-700 group-hover:text-green-600 transition-colors">
-                WhatsApp Us
+                Contattaci su WhatsApp
               </p>
             </a>
           </div>
@@ -257,7 +257,7 @@ const Contact = () => {
           </div>
           <div className="p-6 bg-gradient-to-r from-blue-50 to-green-50 text-center">
             <p className="text-gray-700 text-lg mb-4">
-              🍕 Find us in the heart of Bologna! We're easy to locate and always ready to serve you.
+              🍕 Trovaci nel cuore di Bologna (zona Centro Storico e Saragozza)! Siamo sempre pronti a servirti la migliore pizza.
             </p>
             <a
               href="https://www.google.com/maps/place/Pizzeria+AZZIPIZZA+mica+pizza+e+fichi/"
@@ -265,7 +265,7 @@ const Contact = () => {
               rel="noopener noreferrer"
               className="btn-accent inline-block"
             >
-              📍 Get Directions
+              📍 Ottieni Indicazioni
             </a>
           </div>
         </div>

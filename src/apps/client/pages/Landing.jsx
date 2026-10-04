@@ -9,6 +9,7 @@ import ProductCardSkeleton from "../components/cards/ProductCardSkeleton";
 import HeroSection from "../components/heroSection/HeroSection";
 import SectionHeader from "../components/SectionHeader";
 import { ChevronRight } from "lucide-react";
+import { RestaurantSchema, MenuSchema } from "../components/SchemaMarkup";
 
 import useEmblaCarousel from 'embla-carousel-react'
 import Autoplay from 'embla-carousel-autoplay'
@@ -263,6 +264,11 @@ function Landing() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-cream to-white">
+      <title>Miglior Pizzeria e Fritti a Bologna | Azzipizza Asporto</title>
+      <meta name="description" content="Ordina la migliore pizza artigianale e fritti caldi da Azzipizza a Bologna, zona Centro Storico e Saragozza. Consegna a domicilio e asporto." />
+      <link rel="canonical" href="https://azzipizza.it/" />
+      <RestaurantSchema />
+      <MenuSchema items={items} />
       {/* Hero Section */}
       <HeroSection />
 
@@ -287,7 +293,7 @@ function Landing() {
                     />
                     <input
                       type="text"
-                      placeholder="Search menu items, pizzas, and categories"
+                      placeholder="Cerca pizze, fritti o categorie..."
                       className="pl-8 sm:pl-12 sm:pr-4 py-1.5 sm:py-3.5 w-full border-2 border-gray-100 rounded-2xl focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all bg-gray-50/50 hover:bg-white hover:border-red-200 text-gray-700 shadow-sm text-sm"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
@@ -352,8 +358,8 @@ function Landing() {
         >
           <div className="sm:container mx-auto !px-2 md:px-4">
             <SectionHeader
-              title="Special Offers"
-              subtitle="Don't miss out on our exclusive deals and limited-time offers!"
+              title="Offerte Speciali"
+              subtitle="Non perderti le nostre esclusive offerte e promozioni a tempo limitato!"
             />
 
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 mb-8">
@@ -386,8 +392,8 @@ function Landing() {
         >
           <div className="sm:container mx-auto px-2 md:px-4">
             <SectionHeader
-              title="Chef's Specials"
-              subtitle="Handpicked by our master chefs"
+              title="Le Specialità del Pizzaiolo"
+              subtitle="Le pizze più amate, consigliate dai nostri chef"
             />
 
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-4 md:mb-8">
@@ -420,8 +426,8 @@ function Landing() {
         >
           <div className="sm:container mx-auto px-2 md:px-4">
             <SectionHeader
-              title="Weekly Specials"
-              subtitle="Taste something new this week with our unique, limited-time creations!"
+              title="Le Specialità della Settimana"
+              subtitle="Prova qualcosa di nuovo con le nostre creazioni uniche a tempo limitato!"
             />
 
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 mb-8">
@@ -461,13 +467,13 @@ function Landing() {
                     title={category}
                     subtitle={
                       {
-                        "pizze rosse": "Classic tomato-based pizzas with rich, authentic flavors",
-                        "pizze bianche": "Delicate white pizzas without tomato sauce",
-                        "fritti": "Crispy golden fried bites, perfect for sharing",
-                        "dolci": "Sweet Italian desserts to end your meal perfectly",
-                        "bibite": "Refreshing drinks to complement your pizza",
-                        "birre": "Craft and classic beers to pair with your meal",
-                      }[category.toLowerCase()] || "Handcrafted with love and authentic Italian ingredients"
+                        "pizze rosse": "Classiche pizze rosse dal sapore ricco e autentico",
+                        "pizze bianche": "Pizze bianche delicate senza salsa di pomodoro",
+                        "fritti": "Fritti caldi e croccanti, perfetti da condividere",
+                        "dolci": "Dolci della tradizione per concludere in bellezza",
+                        "bibite": "Bevande rinfrescanti per accompagnare la tua pizza",
+                        "birre": "Birre classiche e artigianali per la tua serata",
+                      }[category.toLowerCase()] || "Preparate a mano con amore e ingredienti autentici"
                     }
                   />
                   <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -481,7 +487,7 @@ function Landing() {
           ) : (
             <div className="text-center py-12">
               <p className="text-gray-500">
-                No matching dishes found. Try another search or select a different category.
+                Nessun piatto trovato. Prova con un'altra ricerca o categoria.
               </p>
             </div>
           )}
@@ -492,8 +498,8 @@ function Landing() {
       <section className="md:py-16 bg-gradient-to-br from-gray-50 to-white">
         <div className="sm:container mx-auto px-2 md:px-4">
           <SectionHeader
-            title="Why Choose Azzipizza?"
-            subtitle="Experience the difference that passion and quality make"
+            title="Perché Scegliere Azzipizza?"
+            subtitle="Scopri la differenza che fanno passione e qualità"
           />
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-4 md:mb-8">
@@ -502,11 +508,10 @@ function Landing() {
                 <FaFire className="text-red-600 size-7 md:size-10" />
               </div>
               <h3 className="!text-lg md:text-2xl font-bold text-gray-800 mb-px md:mb-3">
-                Wood-Fired Oven
+                Cottura Perfetta
               </h3>
               <p className="text-sm text-gray-600">
-                Traditional Italian wood-fired oven for authentic taste and
-                perfect crust
+                Cottura tradizionale per un sapore autentico e un impasto fragrante
               </p>
             </div>
 
@@ -515,11 +520,10 @@ function Landing() {
                 <FaStar className="text-green-600 size-7 md:size-10" />
               </div>
               <h3 className="!text-lg md:text-2xl font-bold text-gray-800 mb-px md:mb-3">
-                Premium Ingredients
+                Ingredienti di Prima Scelta
               </h3>
               <p className="text-sm text-gray-600">
-                Only the finest, freshest ingredients sourced daily for quality
-                you can taste
+                Solo ingredienti freschi e selezionati ogni giorno per una qualità unica
               </p>
             </div>
 
@@ -528,11 +532,10 @@ function Landing() {
                 <FaClock className="text-amber-600 size-7 md:size-10" />
               </div>
               <h3 className="!text-lg md:text-2xl font-bold text-gray-800 mb-px md:mb-3">
-                48-Hour Dough
+                Impasto a Lunga Lievitazione
               </h3>
               <p className="text-sm text-gray-600">
-                Long fermentation process for light, digestible, and flavorful
-                pizza base
+                Lunga lievitazione per una pizza leggera, digeribile e incredibilmente gustosa
               </p>
             </div>
 
@@ -541,10 +544,10 @@ function Landing() {
                 <FaShippingFast className="text-blue-600 size-7 md:size-10" />
               </div>
               <h3 className="!text-lg md:text-2xl font-bold text-gray-800 mb-px md:mb-3">
-                Fast Delivery
+                Consegna Veloce
               </h3>
               <p className="text-sm text-gray-600">
-                Hot and fresh to your door - free delivery on orders over €20
+                Calda e appena sfornata - consegna gratuita per ordini sopra i 20€
               </p>
             </div>
           </div>
