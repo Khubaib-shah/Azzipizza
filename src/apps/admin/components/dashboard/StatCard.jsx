@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { ArrowUpRight, ArrowDownRight, Loader2 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -8,7 +8,7 @@ function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
 
-const StatCard = ({ title, value, icon: Icon, trend, trendValue, description, color = "red" }) => {
+const StatCard = ({ title, value, icon: Icon, trend, trendValue, description, color = "red", isLoading = false }) => {
   const isPositive = trend === 'up';
   
   const colorMap = {
@@ -56,7 +56,11 @@ const StatCard = ({ title, value, icon: Icon, trend, trendValue, description, co
       <div>
         <h3 className="text-slate-500 text-xs font-black uppercase tracking-widest mb-1">{title}</h3>
         <div className="flex items-baseline gap-2">
-          <span className="text-3xl font-serif font-black text-slate-900 tracking-tight">{value}</span>
+          {isLoading ? (
+            <Loader2 aria-label="Loading" className="h-7 w-7 animate-spin text-red-600" />
+          ) : (
+            <span className="text-3xl font-serif font-black text-slate-900 tracking-tight">{value}</span>
+          )}
         </div>
         {description && <p className="mt-2 text-xs text-slate-400 font-medium">{description}</p>}
       </div>

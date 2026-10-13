@@ -6,9 +6,9 @@ import {
     Filter,
     Pizza,
     TrendingUp,
-    Loader2,
     ChevronRight,
-    Printer
+    Printer,
+    Loader2
 } from "lucide-react";
 import { orderService, analyticsService } from "@shared/services";
 import { Card, CardHeader, CardTitle, CardContent } from "@shared/components/ui/card";
@@ -62,15 +62,6 @@ const Reports = () => {
     const reportData = useMemo(() => {
         return analyticsService.getRevenueTrend(orders, dateRange.start, dateRange.end);
     }, [orders, dateRange]);
-
-    if (isLoading) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-[80vh] gap-4">
-                <Loader2 className="w-12 h-12 text-red-600 animate-spin" />
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Loading reports...</p>
-            </div>
-        );
-    }
 
     return (
         <div className="min-h-screen bg-slate-50/50 p-4 md:p-8">
@@ -144,7 +135,13 @@ const Reports = () => {
                             </span>
                         </div>
                     </div>
-                    <RevenueTrendChart data={reportData} />
+                    {isLoading ? (
+                        <div aria-label="Loading sales chart" className="flex h-72 items-center justify-center">
+                            <Loader2 className="h-10 w-10 animate-spin text-red-600" />
+                        </div>
+                    ) : (
+                        <RevenueTrendChart data={reportData} />
+                    )}
                 </Card>
 
                 {/* Detailed Stats Table */}
@@ -159,11 +156,19 @@ const Reports = () => {
                                 <div className="flex gap-4 sm:gap-6 md:gap-10">
                                     <div className="text-left md:text-right">
                                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Net Flow</p>
-                                        <p className="text-lg sm:text-xl font-serif font-black text-slate-900">${visibleStats.totalRevenue.toLocaleString()}</p>
+                                        {isLoading ? (
+                                            <Loader2 aria-label="Loading revenue" className="ml-auto mt-2 h-5 w-5 animate-spin text-red-600" />
+                                        ) : (
+                                            <p className="text-lg sm:text-xl font-serif font-black text-slate-900">${visibleStats.totalRevenue.toLocaleString()}</p>
+                                        )}
                                     </div>
                                     <div className="text-left md:text-right">
                                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Total Volume</p>
-                                        <p className="text-lg sm:text-xl font-serif font-black text-slate-900">{visibleStats.totalOrders} Units</p>
+                                        {isLoading ? (
+                                            <Loader2 aria-label="Loading order count" className="ml-auto mt-2 h-5 w-5 animate-spin text-red-600" />
+                                        ) : (
+                                            <p className="text-lg sm:text-xl font-serif font-black text-slate-900">{visibleStats.totalOrders} Units</p>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -181,7 +186,15 @@ const Reports = () => {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-50">
-                                        {filteredOrdersByTime.length > 0 ? (
+                                        {isLoading ? (
+                                            <tr aria-label="Loading report data">
+                                                <td colSpan={5} className="h-72">
+                                                    <div className="flex h-full items-center justify-center">
+                                                        <Loader2 className="h-10 w-10 animate-spin text-red-600" />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ) : filteredOrdersByTime.length > 0 ? (
                                             filteredOrdersByTime.slice(0, visibleCount).map((order, idx) => (
                                                 <tr key={idx} className="group hover:bg-slate-50/50 transition-colors">
                                                     <td className="px-6 md:px-10 py-6">

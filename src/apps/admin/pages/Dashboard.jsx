@@ -40,15 +40,6 @@ const Dashboard = () => {
   const categoryData = useMemo(() => analyticsService.getCategoryDistribution(orders), [orders]);
   const peakHours = useMemo(() => analyticsService.getPeakHours(orders), [orders]);
 
-  if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 gap-4">
-        <Loader2 className="w-12 h-12 text-red-600 animate-spin" />
-        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Loading data...</p>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-slate-50/50 p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-8">
@@ -79,6 +70,7 @@ const Dashboard = () => {
             trendValue={8.2}
             color="emerald"
             description="Last 30 days"
+            isLoading={isLoading}
           />
           <StatCard
             title="Total Orders"
@@ -88,6 +80,7 @@ const Dashboard = () => {
             trendValue={12.5}
             color="red"
             description="Lifetime orders"
+            isLoading={isLoading}
           />
           <StatCard
             title="Average Value"
@@ -97,6 +90,7 @@ const Dashboard = () => {
             trendValue={2.1}
             color="amber"
             description="/ per order"
+            isLoading={isLoading}
           />
           <StatCard
             title="Active Orders"
@@ -104,6 +98,7 @@ const Dashboard = () => {
             icon={Clock}
             color="blue"
             description="Orders being prepared"
+            isLoading={isLoading}
           />
         </div>
 
@@ -119,7 +114,13 @@ const Dashboard = () => {
               <div className="h-2 w-2 rounded-full bg-red-600 animate-pulse" />
             </CardHeader>
             <CardContent className="p-8">
-              <RevenueTrendChart data={revenueTrend} />
+              {isLoading ? (
+                <div aria-label="Loading sales chart" className="flex h-72 items-center justify-center">
+                  <Loader2 className="h-10 w-10 animate-spin text-red-600" />
+                </div>
+              ) : (
+                <RevenueTrendChart data={revenueTrend} />
+              )}
             </CardContent>
           </Card>
 
@@ -130,7 +131,11 @@ const Dashboard = () => {
               <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-1">Item distribution</p>
             </CardHeader>
             <CardContent className="p-8 flex items-center justify-center">
-              {categoryData.length > 0 ? (
+              {isLoading ? (
+                <div aria-label="Loading category chart" className="flex h-64 w-full items-center justify-center">
+                  <Loader2 className="h-10 w-10 animate-spin text-red-600" />
+                </div>
+              ) : categoryData.length > 0 ? (
                 <CategoryPieChart data={categoryData} />
               ) : (
                 <div className="text-center py-20">
@@ -151,7 +156,13 @@ const Dashboard = () => {
               <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-1">Peak Hours</p>
             </CardHeader>
             <CardContent className="p-8">
-              <PeakHoursChart data={peakHours.slice(11, 24)} /> {/* Showing prime hours 11am - 12am */}
+              {isLoading ? (
+                <div aria-label="Loading peak hours chart" className="flex h-96 items-center justify-center">
+                  <Loader2 className="h-10 w-10 animate-spin text-red-600" />
+                </div>
+              ) : (
+                <PeakHoursChart data={peakHours.slice(11, 24)} />
+              )}
             </CardContent>
           </Card>
 
@@ -170,7 +181,11 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent className="p-0">
               <div className="divide-y divide-slate-50">
-                {orders
+                {isLoading ? (
+                  <div aria-label="Loading orders" className="flex h-60 items-center justify-center">
+                    <Loader2 className="h-10 w-10 animate-spin text-red-600" />
+                  </div>
+                ) : orders
                   .sort((a, b) => (b.totalPrice || b.totalAmount || b.total || 0) - (a.totalPrice || a.totalAmount || a.total || 0))
                   .slice(0, 5)
                   .map((order, idx) => (
