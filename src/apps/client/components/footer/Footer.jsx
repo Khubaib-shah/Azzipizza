@@ -186,12 +186,12 @@ function Footer() {
             © 2025 Azzipizza. All rights reserved.
           </p>
           <div className="flex gap-4 md:gap-6 text-gray-600">
-            <a href="#" className="footer-link font-medium">
+            <Link to="/privacy-policy" className="footer-link font-medium">
               Privacy Policy
-            </a>
-            <a href="#" className="footer-link font-medium">
+            </Link>
+            <Link to="/terms-of-service" className="footer-link font-medium">
               Terms of Service
-            </a>
+            </Link>
           </div>
           <p className="text-gray-600">
             Developed by{" "}

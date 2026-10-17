@@ -21,6 +21,8 @@ const PaymentCancelled = lazy(
   () => import("./apps/client/components/paymentPages/PaymentCancelled"),
 );
 const CategoryPage = lazy(() => import("./apps/client/pages/CategoryPage"));
+const PrivacyPolicy = lazy(() => import("./apps/client/pages/PrivacyPolicy"));
+const TermsOfService = lazy(() => import("./apps/client/pages/TermsOfService"));
 
 // Admin App Components
 import AdminProtectedRoute from "./apps/admin/components/ProtectedRoute";
@@ -50,6 +52,8 @@ const router = createBrowserRouter([
       { path: "menu", element: <CategoryPage defaultCategory="menu" title="Menu Completo Pizzeria e Fritti | Azzipizza Bologna" description="Sfoglia il nostro menu completo di pizze cotte a legna, fritti artigianali, dolci e bibite. Scopri tutti i sapori autentici di Azzipizza a Bologna." /> },
       { path: "pizze", element: <CategoryPage defaultCategory="Pizze Rosse" title="Pizze Rosse e Bianche Artigianali | Azzipizza Bologna" description="Scopri le nostre pizze classiche e speciali. Impasto a lunga lievitazione e ingredienti di prima scelta. Ordina ora la tua pizza preferita!" /> },
       { path: "fritti", element: <CategoryPage defaultCategory="Fritti" title="Fritti Artigianali Caldi e Croccanti | Azzipizza Bologna" description="I migliori fritti di Bologna: supplì, crocchette e patatine preparati freschi ogni giorno. L'antipasto perfetto per la tua pizza." /> },
+      { path: "privacy-policy", element: <PrivacyPolicy /> },
+      { path: "terms-of-service", element: <TermsOfService /> },
       { path: "cart", element: <Cart /> },
       { path: "ordina", element: <Cart /> },
       { path: "order-success/:orderId", element: <OrderSuccess /> },
