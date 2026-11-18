@@ -5,10 +5,17 @@ import apiClient from "./api-client";
  */
 class OrderService {
   /**
-   * Fetches all orders.
+   * Fetches orders (optionally filtered by query params like startDate/endDate).
    */
-  async getAllOrders() {
-    return apiClient.get("/api/orders");
+  async getAllOrders(params = {}) {
+    return apiClient.get("/api/orders", { params });
+  }
+
+  /**
+   * Fetches paginated orders from the backend.
+   */
+  async getPaginatedOrders(params = {}) {
+    return apiClient.get("/api/orders", { params });
   }
 
   /**

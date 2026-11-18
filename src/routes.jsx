@@ -21,6 +21,7 @@ const PaymentCancelled = lazy(
   () => import("./apps/client/components/paymentPages/PaymentCancelled"),
 );
 const CategoryPage = lazy(() => import("./apps/client/pages/CategoryPage"));
+const Checkout = lazy(() => import("./apps/client/pages/Checkout"));
 
 // Admin App Components
 import AdminProtectedRoute from "./apps/admin/components/ProtectedRoute";
@@ -52,6 +53,8 @@ const router = createBrowserRouter([
       { path: "fritti", element: <CategoryPage defaultCategory="Fritti" title="Fritti Artigianali Caldi e Croccanti | Azzipizza Bologna" description="I migliori fritti di Bologna: supplì, crocchette e patatine preparati freschi ogni giorno. L'antipasto perfetto per la tua pizza." /> },
       { path: "cart", element: <Cart /> },
       { path: "ordina", element: <Cart /> },
+      { path: "checkout", element: <Checkout /> },
+      { path: "cassa", element: <Checkout /> },
       { path: "order-success/:orderId", element: <OrderSuccess /> },
       { path: "payment-success", element: <PaymentSuccess /> },
       { path: "payment-error", element: <PaymentError /> },
@@ -72,7 +75,7 @@ const router = createBrowserRouter([
     path: "/admin",
     element: (
       <AdminProtectedRoute>
-        <div className="admin-theme">
+        <div className="admin-theme w-full">
           <AdminLayout />
         </div>
       </AdminProtectedRoute>

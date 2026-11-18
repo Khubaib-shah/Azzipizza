@@ -1,21 +1,19 @@
 import { useState, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Plus, ShoppingBag } from "lucide-react";
 
 import Context from "@shared/context/dataContext";
-import OrderModal from "../components/Modal/OrderModel";
 import CartItem from "../components/CartItem";
 import OrderSummaryCard from "../components/OrderSummaryCard";
 
 function Cart() {
   const { cartItems, addToCart, removeFromCart, CartDecrement } =
     useContext(Context);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
   const totalItemCount = cartItems.reduce((count, item) => count + item.quantity, 0);
 
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => {
-    setIsModalOpen(false);
+  const handleCheckout = () => {
+    navigate("/checkout");
   };
 
   const handleQuantityChange = (item, action) => {
@@ -27,7 +25,7 @@ function Cart() {
   };
 
   return (
-    <section aria-label="Shopping cart" className="container relative z-10 mx-auto max-w-7xl px-4 pb-12 pt-8 sm:pb-16 sm:pt-12">
+    <section aria-label="Shopping cart" className="relative z-10 mx-auto w-full max-w-7xl px-2 py-2 sm:px-6 sm:pb-16 sm:pt-12">
       <div className="mb-7 flex flex-col gap-5 border-b border-amber-200 pb-6 sm:mb-9 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <Link
@@ -113,16 +111,10 @@ function Cart() {
 
           <OrderSummaryCard
             cartItems={cartItems}
-            onCheckout={openModal}
+            onCheckout={handleCheckout}
           />
         </div>
       )}
-
-      <OrderModal
-        isOpen={isModalOpen}
-        closeModal={closeModal}
-        cartItems={cartItems}
-      />
     </section>
   );
 }

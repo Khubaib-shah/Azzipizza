@@ -16,11 +16,7 @@ const SupportButton = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <motion.div
-      drag
-      dragMomentum={false}
-      className="fixed bottom-5 left-3 md:bottom-8 md:left-8 z-[150] flex flex-col items-start gap-4"
-    >
+    <div className="fixed bottom-5 left-3 md:bottom-8 md:left-8 z-[150] flex flex-col items-start gap-4">
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -101,7 +97,7 @@ const SupportButton = () => {
           <MessageSquare className="w-6 h-6" />
         )}
       </button>
-    </motion.div>
+    </div>
   );
 };
 

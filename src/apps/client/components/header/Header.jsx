@@ -28,6 +28,14 @@ function Header() {
     setOpen(false);
   };
 
+  const marqueeMessages = [
+    "Free delivery on every order",
+    "Fresh wood-fired pizza made to order",
+    "Warm crispy fritti delivered to your door",
+    "Fast delivery across Bologna",
+    "Special offers on selected pizzas",
+  ];
+
   useEffect(() => {
     let timeoutId;
     const handleScroll = () => {
@@ -67,6 +75,7 @@ function Header() {
   ];
 
   const location = useLocation();
+
   useEffect(() => {
     const current = navItems.find((item) => item.path === location.pathname);
     if (current) {
@@ -76,6 +85,39 @@ function Header() {
 
   return (
     <>
+      {/* Top Mini Marquee Bar */}
+      <div className="w-full bg-amber-400 text-gray-900 overflow-hidden py-1.5 border-b border-amber-500/30">
+        <style>{`
+          @keyframes azzipizza-marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+          .azzipizza-marquee-track {
+            display: flex;
+            width: max-content;
+            animation: azzipizza-marquee 26s linear infinite;
+          }
+          .azzipizza-marquee-track:hover {
+            animation-play-state: paused;
+          }
+        `}</style>
+        <div className="azzipizza-marquee-track">
+          {[0, 1].map((dupIndex) => (
+            <div key={dupIndex} className="flex items-center shrink-0">
+              {marqueeMessages.map((msg, idx) => (
+                <span
+                  key={`${dupIndex}-${idx}`}
+                  className="inline-flex items-center gap-4 px-5 text-[11px] sm:text-xs font-semibold tracking-wide whitespace-nowrap"
+                >
+                  <span>{msg}</span>
+                  <span aria-hidden="true" className="text-red-700">•</span>
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+
       <header
         className={`sticky top-0 z-50 transition-[background-color,box-shadow,padding] duration-300 h-12  md:h-20 flex items-center ${scrolled
           ? "bg-white shadow-sm"
@@ -148,7 +190,7 @@ function Header() {
                     }`}
                 />
                 {cartCount > 0 && (
-                  <span className="absolute -top-px -right-px md:-top-1 md:-right-1  bg-linear-to-r from-amber-500 to-amber-600 text-white text-xs w-4 h-4 md:w-6 md:h-6 flex items-center justify-center rounded-full font-bold shadow-lg animate-bounce">
+                  <span className="absolute -top-px -right-px md:-top-1 md:-right-1  bg-linear-to-r from-amber-500 to-amber-600 text-white text-xs w-4 h-4 md:w-6 md:h-6 flex items-center justify-center rounded-full font-bold shadow-lg">
                     {cartCount}
                   </span>
                 )}
@@ -193,15 +235,6 @@ function Header() {
             </div>
           </div>
         </div>
-
-        {/* Promotional Banner */}
-        {!scrolled && (
-          <div className="absolute top-10 md:top-18 left-1/2 w-full transform -translate-x-1/2 bg-amber-400 text-center py-1 mt-2 animate-slide-down">
-            <p className="text-[10px] md:text-sm font-semibold text-gray-800">
-              Free Delivery on every Order
-            </p>
-          </div>
-        )}
       </header>
       <HeaderModal open={open} setOpen={setOpen} navItems={navItems} />
     </>
