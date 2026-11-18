@@ -1,7 +1,16 @@
 import { createContext, useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { baseUri } from "@shared/config/api";
+import {
+  calculateCartPricing,
+  calculateDiscountedPrice,
+  calculateUnitPrice,
+  normalizeDiscountPercent,
+} from "@shared/utils/pricing";
 
 const Context = createContext();
+
+const getIngredientsKey = (ingredients = []) =>
+  JSON.stringify([...ingredients].sort((a, b) => a.name.localeCompare(b.name)));
 
 export const ContextProvider = ({ children }) => {
   const [items, setItems] = useState([]);
@@ -27,6 +36,42 @@ export const ContextProvider = ({ children }) => {
     try {
       const { data } = await baseUri.get("/api/menu");
       setItems(data);
+      setCartItems((prevCart) =>
+        prevCart.map((cartItem) => {
+          const product = data.find(
+            (menuItem) => String(menuItem._id) === String(cartItem._id),
+          );
+          if (!product) return cartItem;
+
+          const selectedIngredients = (cartItem.selectedIngredients || []).map(
+            (selectedIngredient) => {
+              const currentIngredient = (product.ingredients || []).find(
+                (ingredient) =>
+                  (selectedIngredient._id &&
+                    String(ingredient._id) === String(selectedIngredient._id)) ||
+                  ingredient.name === selectedIngredient.name,
+              );
+              return currentIngredient
+                ? { ...selectedIngredient, price: Number(currentIngredient.price) }
+                : selectedIngredient;
+            },
+          );
+          const discount = normalizeDiscountPercent(product.discount);
+          const originalPrice = Number(product.price);
+          const price = calculateUnitPrice(
+            calculateDiscountedPrice(originalPrice, discount),
+            selectedIngredients,
+          );
+
+          return {
+            ...cartItem,
+            discount,
+            originalPrice,
+            price,
+            selectedIngredients,
+          };
+        }),
+      );
     } catch (error) {
       console.error("Error fetching menu:", error);
       setError(error.message || "Failed to load menu");
@@ -45,20 +90,14 @@ export const ContextProvider = ({ children }) => {
 
   const addToCart = useCallback((item, selectedIngredients = [], customizations = "") => {
     setCartItems((prevCart) => {
-      const ingredientsKey = JSON.stringify(
-        [...selectedIngredients].sort((a, b) => a.name.localeCompare(b.name))
-      );
+      const selectedIngredientsKey = getIngredientsKey(selectedIngredients);
 
       const existingItemIndex = prevCart.findIndex((cartItem) => {
-        const existingIngredientsKey = JSON.stringify(
-          [...cartItem.selectedIngredients].sort((a, b) =>
-            a.name.localeCompare(b.name)
-          )
-        );
+        const existingIngredientsKey = getIngredientsKey(cartItem.selectedIngredients);
         return (
           cartItem._id === item._id &&
-          existingIngredientsKey === ingredientsKey &&
-          cartItem.customizations === customizations
+          existingIngredientsKey === selectedIngredientsKey &&
+          cartItem.customizations === (customizations || "")
         );
       });
 
@@ -66,7 +105,10 @@ export const ContextProvider = ({ children }) => {
         const updatedCart = [...prevCart];
         updatedCart[existingItemIndex] = {
           ...updatedCart[existingItemIndex],
+          ...item,
           quantity: updatedCart[existingItemIndex].quantity + 1,
+          selectedIngredients,
+          customizations,
         };
         return updatedCart;
       } else {
@@ -85,24 +127,16 @@ export const ContextProvider = ({ children }) => {
 
   const CartDecrement = useCallback((item) => {
     setCartItems((prevCart) => {
-      const targetIngredientsKey = JSON.stringify(
-        [...item.selectedIngredients].sort((a, b) =>
-          a.name.localeCompare(b.name)
-        )
-      );
+      const targetIngredientsKey = getIngredientsKey(item.selectedIngredients);
 
       return prevCart
         .map((cartItem) => {
-          const currentIngredientsKey = JSON.stringify(
-            [...cartItem.selectedIngredients].sort((a, b) =>
-              a.name.localeCompare(b.name)
-            )
-          );
+          const currentIngredientsKey = getIngredientsKey(cartItem.selectedIngredients);
 
           if (
             cartItem._id === item._id &&
             currentIngredientsKey === targetIngredientsKey &&
-            cartItem.customizations === item.customizations
+            cartItem.customizations === (item.customizations || "")
           ) {
             return {
               ...cartItem,
@@ -115,8 +149,18 @@ export const ContextProvider = ({ children }) => {
     });
   }, []);
 
-  const removeFromCart = useCallback((itemId) => {
-    setCartItems((prevCart) => prevCart.filter((item) => item._id !== itemId));
+  const removeFromCart = useCallback((item) => {
+    const targetIngredientsKey = getIngredientsKey(item.selectedIngredients);
+    const targetCustomizations = item.customizations || "";
+
+    setCartItems((prevCart) =>
+      prevCart.filter(
+        (cartItem) =>
+          cartItem._id !== item._id ||
+          getIngredientsKey(cartItem.selectedIngredients) !== targetIngredientsKey ||
+          (cartItem.customizations || "") !== targetCustomizations
+      )
+    );
   }, []);
 
   const clearCart = useCallback(() => {
@@ -148,15 +192,7 @@ export const ContextProvider = ({ children }) => {
   }, [cartItems]);
 
   const cartTotal = useMemo(() => {
-    return cartItems.reduce((total, item) => {
-      const discountedPrice =
-        item.price - (item.discount ? (item.price * item.discount) / 100 : 0);
-
-      const ingredientsTotal =
-        item.selectedIngredients?.reduce((sum, ing) => sum + ing.price, 0) || 0;
-
-      return total + (discountedPrice + ingredientsTotal) * item.quantity;
-    }, 0);
+    return calculateCartPricing(cartItems).total;
   }, [cartItems]);
 
   const refreshMenu = useCallback(async () => {

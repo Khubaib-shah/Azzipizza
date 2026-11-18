@@ -2,19 +2,23 @@ import { useEffect, useState, useCallback } from "react";
 import { menuService } from "@shared/services";
 import { Filter, Loader2, Plus } from "lucide-react";
 import { toast } from "react-toastify";
-import { motion, AnimatePresence } from "framer-motion";
 import ProductFormDialog from "../components/ProductFormDialog";
 import DeleteProductDialog from "../components/DeleteProductDialog";
 import ProductCard from "../components/ProductCard";
 import FilterBar from "../components/FilterBar";
 import PageHeader from "@shared/components/ui/PageHeader";
 import { Button } from "@shared/components/ui/button";
+import { useAdminData } from "../context/AdminDataContext";
 
 const ListItems = () => {
-  const [items, setItems] = useState([]);
+  const {
+    menuItems: items,
+    setMenuItems: setItems,
+    menuLoading: loading,
+    menuError: error,
+    fetchMenuItems,
+  } = useAdminData();
   const [filteredItems, setFilteredItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [specialsFilter, setSpecialsFilter] = useState("all");
@@ -35,24 +39,11 @@ const ListItems = () => {
   const [newIngredientPrice, setNewIngredientPrice] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
 
-  const fetchMenu = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response = await menuService.getAllItems();
-      setItems(response.data);
-      setFilteredItems(response.data);
-    } catch (error) {
-      console.error("[ListItems Fetch Error]:", error);
-      setError("Mamma Mia! Failed to retrieve the menu gallery.");
-      toast.error("Could not load masterpieces.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
-    fetchMenu();
-  }, [fetchMenu]);
+    fetchMenuItems().catch(() => {
+      toast.error("Could not load menu items.");
+    });
+  }, [fetchMenuItems]);
 
   useEffect(() => {
     let result = items;
@@ -241,7 +232,7 @@ const ListItems = () => {
 
   return (
     <div className="min-h-screen bg-slate-50/50 p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
+      <div className="">
         <PageHeader
           title="Menu Master"
           subtitle="Manage your kitchen's masterpieces and promotional deals."
@@ -266,60 +257,47 @@ const ListItems = () => {
           categories={categories}
         />
 
-        <AnimatePresence mode="popLayout">
-          {loading && items.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex justify-center items-center h-80 bg-white/20 backdrop-blur-sm rounded-4xl border border-white"
-            >
-              <div className="flex flex-col items-center gap-4">
-                <Loader2 className="h-10 w-10 text-red-600 animate-spin" />
-                <p className="text-slate-400 font-black text-xs uppercase tracking-widest">
-                  Loading items...
-                </p>
-              </div>
-            </motion.div>
-          ) : filteredItems.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="bg-white p-20 rounded-4xl text-center border border-slate-100 shadow-sm"
-            >
-              <div className="h-24 w-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Filter className="h-10 w-10 text-slate-200" />
-              </div>
-              <h3 className="text-2xl font-serif font-black text-slate-900 mb-2">
-                No items found
-              </h3>
-              <p className="text-slate-400 font-medium">
-                Try a different search or filter.
+        {loading && items.length === 0 ? (
+          <div className="flex justify-center items-center h-80 bg-white/60 rounded-xl border border-slate-200">
+            <div className="flex flex-col items-center gap-3">
+              <Loader2 className="h-8 w-8 text-red-600 animate-spin" />
+              <p className="text-slate-500 font-medium text-xs">
+                Loading items...
               </p>
-            </motion.div>
-          ) : (
-            <motion.div
-              layout
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
-            >
-              {filteredItems.map((item) => (
-                <ProductCard
-                  key={item._id}
-                  item={item}
-                  onEdit={(selectedItem) => {
-                    setDialogMode("edit");
-                    setItemToEdit(selectedItem);
-                    setImagePreview(selectedItem.image);
-                    setEditDialogOpen(true);
-                  }}
-                  onDelete={(selectedItem) => {
-                    setItemToDelete(selectedItem);
-                    setDeleteDialogOpen(true);
-                  }}
-                />
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
+          </div>
+        ) : filteredItems.length === 0 ? (
+          <div className="bg-white p-16 rounded-xl text-center border border-slate-200 shadow-xs">
+            <div className="h-16 w-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Filter className="h-8 w-8 text-slate-300" />
+            </div>
+            <h3 className="text-base font-semibold text-slate-900 mb-1">
+              No items found
+            </h3>
+            <p className="text-slate-500 text-xs">
+              Try a different search or filter.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            {filteredItems.map((item) => (
+              <ProductCard
+                key={item._id}
+                item={item}
+                onEdit={(selectedItem) => {
+                  setDialogMode("edit");
+                  setItemToEdit(selectedItem);
+                  setImagePreview(selectedItem.image);
+                  setEditDialogOpen(true);
+                }}
+                onDelete={(selectedItem) => {
+                  setItemToDelete(selectedItem);
+                  setDeleteDialogOpen(true);
+                }}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       <DeleteProductDialog

@@ -1,258 +1,518 @@
 import { useState, useEffect, useMemo } from "react";
 import {
-    BarChart3,
-    Calendar,
-    Download,
-    Filter,
-    Pizza,
-    TrendingUp,
-    Loader2,
-    ChevronRight,
-    Printer
+  BarChart3,
+  Download,
+  Pizza,
+  TrendingUp,
+  Loader2,
+  Euro,
+  ShoppingBag,
+  CheckCircle2,
+  RefreshCw,
+  ChevronFirst,
+  ChevronLeft,
+  ChevronRight,
+  ChevronLast,
 } from "lucide-react";
-import { orderService, analyticsService } from "@shared/services";
+import { analyticsService } from "@shared/services";
 import { Card, CardHeader, CardTitle, CardContent } from "@shared/components/ui/card";
 import { Button } from "@shared/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@shared/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@shared/components/ui/select";
 import { RevenueTrendChart } from "../components/dashboard/DashboardCharts";
+import StatCard from "../components/dashboard/StatCard";
 import PageHeader from "@shared/components/ui/PageHeader";
+import { useAdminData } from "../context/AdminDataContext";
 
 const Reports = () => {
-    const [orders, setOrders] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [dateRange, setDateRange] = useState({
-        start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        end: new Date().toISOString().split('T')[0]
-    });
-    const [visibleCount, setVisibleCount] = useState(15);
+  const { orders, ordersLoading: isLoading, fetchOrders } = useAdminData();
+  const [refreshing, setRefreshing] = useState(false);
+  const [dateRange, setDateRange] = useState(() => {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    return {
+      start: startOfMonth.toISOString().split("T")[0],
+      end: now.toISOString().split("T")[0],
+    };
+  });
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
 
-    useEffect(() => {
-        const fetchAll = async () => {
-            try {
-                const response = await orderService.getAllOrders();
-                setOrders(response.data || []);
-            } catch (err) {
-                console.error("Reports data fetch failed:", err);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchAll();
-    }, []);
+  useEffect(() => {
+    fetchOrders({ startDate: dateRange.start, endDate: dateRange.end });
+  }, [fetchOrders, dateRange.start, dateRange.end]);
 
-    // Filter orders based on dateRange
-    const filteredOrdersByTime = useMemo(() => {
-        const start = new Date(dateRange.start);
-        start.setHours(0, 0, 0, 0);
-        const end = new Date(dateRange.end);
-        end.setHours(23, 59, 59, 999);
-
-        return orders.filter(o => {
-            const d = new Date(o.createdAt);
-            return d >= start && d <= end;
-        });
-    }, [orders, dateRange]);
-
-    // KPIs derived only from the rows currently visible in the ledger
-    const visibleStats = useMemo(() =>
-        analyticsService.calculateKPIs(filteredOrdersByTime.slice(0, visibleCount)),
-        [filteredOrdersByTime, visibleCount]
-    );
-
-    // Date range processing for Chart
-    const reportData = useMemo(() => {
-        return analyticsService.getRevenueTrend(orders, dateRange.start, dateRange.end);
-    }, [orders, dateRange]);
-
-    if (isLoading) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-[80vh] gap-4">
-                <Loader2 className="w-12 h-12 text-red-600 animate-spin" />
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Loading reports...</p>
-            </div>
-        );
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await fetchOrders({
+        startDate: dateRange.start,
+        endDate: dateRange.end,
+        force: true,
+      });
+    } finally {
+      setTimeout(() => setRefreshing(false), 300);
     }
+  };
 
-    return (
-        <div className="min-h-screen bg-slate-50/50 p-4 md:p-8">
-            <div className="max-w-7xl mx-auto space-y-8 pb-20">
-                <PageHeader
-                    title="Azzipizza Reports"
-                    subtitle="View and print your sales reports."
-                    actions={
-                        <div className="flex items-center gap-2 print:hidden">
-                            <Button
-                                variant="outline"
-                                onClick={() => window.print()}
-                                className="rounded-xl border-slate-200 font-bold text-[9px] uppercase tracking-widest px-4 h-9 bg-white flex gap-1.5 cursor-pointer"
-                            >
-                                <Printer className="w-3.5 h-3.5" /> Print Report
-                            </Button>
-                        </div>
-                    }
-                />
+  const applyPreset = (days) => {
+    const end = new Date().toISOString().split("T")[0];
+    const start = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+    setDateRange({ start, end });
+    setPageIndex(0);
+  };
 
-                {/* Filters/Tabs Replacement: Custom Range Picker */}
-                <div className="flex flex-col lg:flex-row justify-between items-center gap-4 sm:gap-6 bg-white p-4 sm:p-5 rounded-2xl border border-slate-100 shadow-xl shadow-slate-200/40 print:hidden">
-                    <div className="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto">
-                        <div className="flex flex-col gap-1.5 w-full sm:w-auto">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Range Start</label>
-                            <input
-                                type="date"
-                                value={dateRange.start}
-                                onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
-                                className="bg-slate-50 border border-slate-100 rounded-xl px-4 sm:px-5 h-10 sm:h-12 font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-red-600/10 transition-all text-xs"
-                            />
-                        </div>
-                        <div className="h-px w-4 bg-slate-200 mt-5 hidden sm:block"></div>
-                        <div className="flex flex-col gap-1.5 w-full sm:w-auto">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Range End</label>
-                            <input
-                                type="date"
-                                value={dateRange.end}
-                                onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
-                                className="bg-slate-50 border border-slate-100 rounded-xl px-4 sm:px-5 h-10 sm:h-12 font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-red-600/10 transition-all text-xs"
-                            />
-                        </div>
-                    </div>
+  const filteredOrdersByTime = useMemo(() => {
+    const start = new Date(dateRange.start);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(dateRange.end);
+    end.setHours(23, 59, 59, 999);
 
-                    <div className="flex items-center gap-3 w-full lg:w-auto mt-2 lg:mt-0">
-                        <div className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-6 sm:px-8 h-10 sm:h-12 bg-red-600 rounded-xl shadow-lg shadow-red-200 text-white">
-                            <Calendar className="w-4 h-4" />
-                            <span className="text-[10px] font-black uppercase tracking-widest">
-                                Filtering Data
-                            </span>
-                        </div>
-                        <Button variant="outline" className="hidden h-10 w-10 sm:h-12 sm:w-12 rounded-xl border-slate-100 bg-slate-50 hover:bg-slate-100 transition-colors">
-                            <Filter className="w-4 h-4 text-slate-400" />
-                        </Button>
-                    </div>
-                </div>
+    return orders.filter((o) => {
+      const d = new Date(o.createdAt);
+      return d >= start && d <= end;
+    });
+  }, [orders, dateRange]);
 
-                {/* Revenue Trend Visualization */}
-                <Card className="border-none shadow-premium rounded-3xl bg-white overflow-hidden p-4 sm:p-6">
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                        <div>
-                            <h3 className="text-xl font-serif font-black text-slate-900">Sales Trend</h3>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-1">
-                                Visualizing fiscal momentum for your selected date range
-                            </p>
-                        </div>
-                        <div className="px-4 py-2 bg-red-50 rounded-xl flex items-center gap-2">
-                            <TrendingUp className="w-4 h-4 text-red-600" />
-                            <span className="text-[10px] sm:text-[11px] font-black text-red-600 uppercase tracking-widest">
-                                Sales Growth
-                            </span>
-                        </div>
-                    </div>
-                    <RevenueTrendChart data={reportData} />
-                </Card>
+  const periodStats = useMemo(
+    () => analyticsService.calculateKPIs(filteredOrdersByTime),
+    [filteredOrdersByTime]
+  );
 
-                {/* Detailed Stats Table */}
-                <div className="grid grid-cols-1 gap-6 sm:gap-8">
-                    <Card className="border-none shadow-premium rounded-3xl bg-white overflow-hidden">
-                        <CardHeader className="bg-white border-b border-slate-50 py-4 px-4 md:py-6 md:px-6">
-                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
-                                <div>
-                                    <CardTitle className="text-xl sm:text-2xl font-serif font-black text-slate-800">Order List</CardTitle>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-1">Granular order history & unit metrics</p>
-                                </div>
-                                <div className="flex gap-4 sm:gap-6 md:gap-10">
-                                    <div className="text-left md:text-right">
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Net Flow</p>
-                                        <p className="text-lg sm:text-xl font-serif font-black text-slate-900">${visibleStats.totalRevenue.toLocaleString()}</p>
-                                    </div>
-                                    <div className="text-left md:text-right">
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Total Volume</p>
-                                        <p className="text-lg sm:text-xl font-serif font-black text-slate-900">{visibleStats.totalOrders} Units</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </CardHeader>
-                        <CardContent className="p-0">
-                            <div className="overflow-x-auto">
-                                <table className="w-full border-collapse">
-                                    <thead>
-                                        <tr className="bg-slate-50/50 border-b border-slate-100">
-                                            <th className="px-6 md:px-10 py-6 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Transaction ID</th>
-                                            <th className="px-6 md:px-10 py-6 text-left text-[10px] font-black uppercase tracking-widest text-slate-400 hidden sm:table-cell">Date & Time</th>
-                                            <th className="px-6 md:px-10 py-6 text-left text-[10px] font-black uppercase tracking-widest text-slate-400 hidden md:table-cell">Items</th>
-                                            <th className="px-6 md:px-10 py-6 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Status</th>
-                                            <th className="px-6 md:px-10 py-6 text-right text-[10px] font-black uppercase tracking-widest text-slate-400">Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-50">
-                                        {filteredOrdersByTime.length > 0 ? (
-                                            filteredOrdersByTime.slice(0, visibleCount).map((order, idx) => (
-                                                <tr key={idx} className="group hover:bg-slate-50/50 transition-colors">
-                                                    <td className="px-6 md:px-10 py-6">
-                                                        <span className="font-mono text-[10px] font-black text-slate-900 bg-slate-100 px-3 py-1.5 rounded-lg">
-                                                            #{order._id.slice(-8).toUpperCase()}
-                                                        </span>
-                                                    </td>
-                                                    <td className="px-6 md:px-10 py-6 hidden sm:table-cell">
-                                                        <div className="flex flex-col">
-                                                            <span className="text-[11px] font-black text-slate-900">
-                                                                {new Date(order.createdAt).toLocaleDateString()}
-                                                            </span>
-                                                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">
-                                                                {new Date(order.createdAt).toLocaleTimeString()}
-                                                            </span>
-                                                        </div>
-                                                    </td>
-                                                    <td className="px-6 md:px-10 py-6 hidden md:table-cell">
-                                                        <div className="flex items-center gap-3">
-                                                            <div className="w-8 h-8 rounded-xl bg-orange-50 flex items-center justify-center text-orange-600">
-                                                                <Pizza className="w-4 h-4" />
-                                                            </div>
-                                                            <span className="text-[11px] font-bold text-slate-700 truncate max-w-[150px]">
-                                                                {order.items?.length || 0} Items ordered
-                                                            </span>
-                                                        </div>
-                                                    </td>
-                                                    <td className="px-6 md:px-10 py-6">
-                                                        <div className={`inline-flex items-center px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${order.orderStatus === 'Delivered' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                                                            order.orderStatus === 'Cancelled' ? 'bg-rose-50 text-rose-600 border-rose-100' :
-                                                                'bg-amber-50 text-amber-600 border-amber-100'
-                                                            }`}>
-                                                            {order.orderStatus}
-                                                        </div>
-                                                    </td>
-                                                    <td className="px-6 md:px-10 py-6 text-right">
-                                                        <span className="text-lg font-serif font-black text-slate-900 tracking-tight">
-                                                            ${parseFloat(order.totalPrice || order.totalAmount || order.total || 0).toFixed(2)}
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                            ))
-                                        ) : (
-                                            <tr>
-                                                <td colSpan={5} className="px-10 py-20 text-center">
-                                                    <BarChart3 className="w-16 h-16 text-slate-100 mx-auto mb-6" />
-                                                    <h3 className="text-xl font-serif font-black text-slate-900 mb-2">No reports found.</h3>
-                                                    <p className="text-slate-400 font-medium text-xs max-w-xs mx-auto">Transactional data will automatically populate this ledger as sales occur.</p>
-                                                </td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
-                            {filteredOrdersByTime.length > visibleCount && (
-                                <div className="p-8 border-t border-slate-50 flex justify-center print:hidden">
-                                    <Button
-                                        variant="ghost"
-                                        className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-red-600"
-                                        onClick={() => setVisibleCount(prev => prev + 15)}
-                                    >
-                                        Show more orders <ChevronRight className="ml-2 w-4 h-4" />
-                                    </Button>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
-                </div>
+  const deliveredCount = useMemo(
+    () => filteredOrdersByTime.filter((o) => o.orderStatus === "Delivered").length,
+    [filteredOrdersByTime]
+  );
+
+  const reportData = useMemo(
+    () => analyticsService.getRevenueTrend(orders, dateRange.start, dateRange.end),
+    [orders, dateRange]
+  );
+
+  const pageCount = Math.max(1, Math.ceil(filteredOrdersByTime.length / pageSize));
+
+  useEffect(() => {
+    if (pageIndex >= pageCount) {
+      setPageIndex(0);
+    }
+  }, [pageIndex, pageCount]);
+
+  const paginatedOrders = useMemo(() => {
+    const start = pageIndex * pageSize;
+    return filteredOrdersByTime.slice(start, start + pageSize);
+  }, [filteredOrdersByTime, pageIndex, pageSize]);
+
+  const startRow = filteredOrdersByTime.length === 0 ? 0 : pageIndex * pageSize + 1;
+  const endRow = Math.min((pageIndex + 1) * pageSize, filteredOrdersByTime.length);
+
+  const exportToCSV = () => {
+    if (!filteredOrdersByTime.length) return;
+    const headers = [
+      "Order ID",
+      "Date",
+      "Time",
+      "Customer",
+      "Phone",
+      "Street",
+      "City",
+      "Doorbell",
+      "Payment Method",
+      "Payment Status",
+      "Order Status",
+      "Total (EUR)",
+    ];
+    const rows = filteredOrdersByTime.map((o) => [
+      `"${o._id}"`,
+      `"${new Date(o.createdAt).toLocaleDateString()}"`,
+      `"${new Date(o.createdAt).toLocaleTimeString()}"`,
+      `"${(o.name || "").replace(/"/g, '""')}"`,
+      `"${(o.phoneNumber || "").replace(/"/g, '""')}"`,
+      `"${(o.deliveryAddress?.street || "").replace(/"/g, '""')}"`,
+      `"${(o.deliveryAddress?.city || "").replace(/"/g, '""')}"`,
+      `"${(o.doorbellName || "").replace(/"/g, '""')}"`,
+      `"${o.paymentMethod || ""}"`,
+      `"${o.paymentStatus || ""}"`,
+      `"${o.orderStatus || ""}"`,
+      parseFloat(o.totalPrice || o.totalAmount || o.total || 0).toFixed(2),
+    ]);
+    const csvContent = [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `azzipizza-report-${dateRange.start}-to-${dateRange.end}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50/70 p-4 md:p-6">
+      <div className="max-w-7xl mx-auto space-y-5 pb-12">
+        <PageHeader
+          title="Reports"
+          subtitle="Sales analytics and order history for your selected date range."
+          actions={
+            <div className="flex flex-wrap items-center gap-2 print:hidden">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleRefresh}
+                className="h-9 px-3 rounded-lg border-slate-200 bg-white text-slate-700 text-xs font-medium cursor-pointer"
+              >
+                <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${refreshing ? "animate-spin" : ""}`} />
+                Refresh
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={exportToCSV}
+                disabled={filteredOrdersByTime.length === 0}
+                className="h-9 px-3 rounded-lg border-slate-200 bg-white text-slate-700 text-xs font-medium cursor-pointer"
+              >
+                <Download className="w-3.5 h-3.5 mr-1.5 text-slate-500" />
+                Export CSV
+              </Button>
             </div>
+          }
+        />
+
+        {/* Date Range Filter Bar */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs print:hidden">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-end gap-3">
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-slate-500">From</label>
+              <input
+                type="date"
+                value={dateRange.start}
+                onChange={(e) => {
+                  setDateRange((prev) => ({ ...prev, start: e.target.value }));
+                  setPageIndex(0);
+                }}
+                className="bg-white border border-slate-200 rounded-lg px-3 h-9 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-red-600/15"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-slate-500">To</label>
+              <input
+                type="date"
+                value={dateRange.end}
+                onChange={(e) => {
+                  setDateRange((prev) => ({ ...prev, end: e.target.value }));
+                  setPageIndex(0);
+                }}
+                className="bg-white border border-slate-200 rounded-lg px-3 h-9 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-red-600/15"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => applyPreset(7)}
+              className="h-8 px-3 rounded-lg border-slate-200 bg-white text-xs font-medium text-slate-700 cursor-pointer"
+            >
+              Last 7 days
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => applyPreset(30)}
+              className="h-8 px-3 rounded-lg border-slate-200 bg-white text-xs font-medium text-slate-700 cursor-pointer"
+            >
+              Last 30 days
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => applyPreset(90)}
+              className="h-8 px-3 rounded-lg border-slate-200 bg-white text-xs font-medium text-slate-700 cursor-pointer"
+            >
+              Last 90 days
+            </Button>
+          </div>
         </div>
-    );
+
+        {/* Period KPI Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard
+            title="Period Revenue"
+            value={`€${periodStats.totalRevenue.toFixed(2)}`}
+            icon={Euro}
+            color="emerald"
+            description="Delivered orders in range"
+            isLoading={isLoading}
+          />
+          <StatCard
+            title="Total Orders"
+            value={periodStats.totalOrders}
+            icon={ShoppingBag}
+            color="red"
+            description="Orders placed in range"
+            isLoading={isLoading}
+          />
+          <StatCard
+            title="Delivered"
+            value={deliveredCount}
+            icon={CheckCircle2}
+            color="blue"
+            description="Completed deliveries"
+            isLoading={isLoading}
+          />
+          <StatCard
+            title="Average Order"
+            value={`€${periodStats.averageOrderValue.toFixed(2)}`}
+            icon={TrendingUp}
+            color="amber"
+            description="Per delivered order"
+            isLoading={isLoading}
+          />
+        </div>
+
+        {/* Revenue Trend Chart */}
+        <Card className="border border-slate-200/80 shadow-xs rounded-xl bg-white overflow-hidden">
+          <CardHeader className="border-b border-slate-100 py-4 px-5 flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="!font-sans text-sm font-semibold text-slate-900">
+                Sales Trend
+              </CardTitle>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Daily revenue for the selected range
+              </p>
+            </div>
+            <div className="h-2 w-2 rounded-full bg-emerald-500" />
+          </CardHeader>
+          <CardContent className="p-5">
+            {isLoading ? (
+              <div aria-label="Loading sales chart" className="flex h-72 items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-red-600" />
+              </div>
+            ) : (
+              <RevenueTrendChart data={reportData} />
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Transactions Table */}
+        <Card className="border border-slate-200/80 shadow-xs rounded-xl bg-white overflow-hidden">
+          <CardHeader className="border-b border-slate-100 py-4 px-5 flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="!font-sans text-sm font-semibold text-slate-900">
+                Order History
+              </CardTitle>
+              <p className="text-xs text-slate-500 mt-0.5">
+                {filteredOrdersByTime.length} matching orders
+              </p>
+            </div>
+          </CardHeader>
+
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader className="bg-slate-50/80 border-b border-slate-200">
+                  <TableRow className="hover:bg-transparent">
+                    <TableHead className="h-10 text-xs font-medium text-slate-500 pl-4 w-32">
+                      Order ID
+                    </TableHead>
+                    <TableHead className="h-10 text-xs font-medium text-slate-500">
+                      Customer
+                    </TableHead>
+                    <TableHead className="h-10 text-xs font-medium text-slate-500 hidden sm:table-cell">
+                      Date & Time
+                    </TableHead>
+                    <TableHead className="h-10 text-xs font-medium text-slate-500 hidden md:table-cell">
+                      Items
+                    </TableHead>
+                    <TableHead className="h-10 text-xs font-medium text-slate-500">
+                      Status
+                    </TableHead>
+                    <TableHead className="h-10 text-xs font-medium text-slate-500 text-right pr-4">
+                      Total
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+
+                <TableBody>
+                  {isLoading ? (
+                    <TableRow aria-label="Loading report data">
+                      <TableCell colSpan={6} className="h-64 text-center">
+                        <Loader2 className="h-7 w-7 animate-spin text-red-600 mx-auto" />
+                      </TableCell>
+                    </TableRow>
+                  ) : paginatedOrders.length > 0 ? (
+                    paginatedOrders.map((order, idx) => (
+                      <TableRow
+                        key={order._id || idx}
+                        className="hover:bg-slate-50/80 transition-colors border-b border-slate-100"
+                      >
+                        <TableCell className="pl-4 py-3">
+                          <span className="font-mono text-xs font-semibold text-slate-700">
+                            #{order._id.slice(-6).toUpperCase()}
+                          </span>
+                        </TableCell>
+
+                        <TableCell className="py-3 text-xs font-medium text-slate-900">
+                          {order.name || "Customer"}
+                        </TableCell>
+
+                        <TableCell className="py-3 hidden sm:table-cell">
+                          <div className="text-xs font-medium text-slate-700">
+                            {new Date(order.createdAt).toLocaleDateString()}
+                          </div>
+                          <div className="text-[11px] text-slate-400">
+                            {new Date(order.createdAt).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </div>
+                        </TableCell>
+
+                        <TableCell className="py-3 hidden md:table-cell">
+                          <div className="flex items-center gap-2 text-xs text-slate-600">
+                            <Pizza className="w-3.5 h-3.5 text-slate-400" />
+                            <span>{order.items?.length || 0} items</span>
+                          </div>
+                        </TableCell>
+
+                        <TableCell className="py-3">
+                          <span
+                            className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium border ${
+                              order.orderStatus === "Delivered"
+                                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                : order.orderStatus === "Cancelled"
+                                ? "bg-red-50 text-red-700 border-red-200"
+                                : "bg-amber-50 text-amber-700 border-amber-200"
+                            }`}
+                          >
+                            {order.orderStatus}
+                          </span>
+                        </TableCell>
+
+                        <TableCell className="py-3 pr-4 text-right font-semibold tabular-nums text-slate-900 text-sm">
+                          €{parseFloat(order.totalPrice || order.totalAmount || order.total || 0).toFixed(2)}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={6} className="py-16 text-center">
+                        <BarChart3 className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+                        <p className="text-sm font-semibold text-slate-900 mb-1">
+                          No orders found
+                        </p>
+                        <p className="text-slate-500 text-xs">
+                          Try selecting a different date range.
+                        </p>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+
+            {/* Pagination Bar */}
+            {filteredOrdersByTime.length > 0 && (
+              <div className="flex flex-wrap items-center justify-between gap-4 border-t border-slate-100 px-4 py-3 bg-slate-50/40 print:hidden">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-slate-500">Rows per page</span>
+                  <Select
+                    value={String(pageSize)}
+                    onValueChange={(val) => {
+                      setPageSize(Number(val));
+                      setPageIndex(0);
+                    }}
+                  >
+                    <SelectTrigger className="h-8 w-16 bg-white border-slate-200 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white">
+                      {[10, 25, 50].map((size) => (
+                        <SelectItem key={size} value={String(size)} className="text-xs">
+                          {size}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <span className="text-xs text-slate-500 tabular-nums">
+                    <span className="font-medium text-slate-900">
+                      {startRow}-{endRow}
+                    </span>{" "}
+                    of{" "}
+                    <span className="font-medium text-slate-900">
+                      {filteredOrdersByTime.length}
+                    </span>
+                  </span>
+
+                  <div className="flex items-center gap-1">
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      className="h-8 w-8 border-slate-200 bg-white cursor-pointer"
+                      onClick={() => setPageIndex(0)}
+                      disabled={pageIndex === 0}
+                      aria-label="First page"
+                    >
+                      <ChevronFirst className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      className="h-8 w-8 border-slate-200 bg-white cursor-pointer"
+                      onClick={() => setPageIndex((p) => Math.max(0, p - 1))}
+                      disabled={pageIndex === 0}
+                      aria-label="Previous page"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      className="h-8 w-8 border-slate-200 bg-white cursor-pointer"
+                      onClick={() => setPageIndex((p) => Math.min(pageCount - 1, p + 1))}
+                      disabled={pageIndex >= pageCount - 1}
+                      aria-label="Next page"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      className="h-8 w-8 border-slate-200 bg-white cursor-pointer"
+                      onClick={() => setPageIndex(pageCount - 1)}
+                      disabled={pageIndex >= pageCount - 1}
+                      aria-label="Last page"
+                    >
+                      <ChevronLast className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
 };
 
 export default Reports;

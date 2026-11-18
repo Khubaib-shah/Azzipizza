@@ -120,7 +120,7 @@ export default function HeaderModal({ open, setOpen, navItems }) {
                         <Link
                           to="/#full-menu"
                           onClick={() => setOpen(false)}
-                          className="flex items-center justify-center w-full py-4 bg-[var(--color-primary)] text-white rounded-xl font-bold shadow-lg shadow-red-200 btn-primary hover:-translate-y-1 transition-all"
+                          className="flex items-center justify-center w-full py-4 bg-gradient-to-br from-red-600 to-red-800 hover:from-red-700 hover:to-red-900 text-white rounded-xl font-bold shadow-lg shadow-red-200 hover:-translate-y-1 transition-all"
                         >
                           Order Now 🍕
                         </Link>

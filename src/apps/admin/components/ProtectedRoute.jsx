@@ -4,7 +4,7 @@ const ProtectedRoute = ({ children }) => {
   const isLoggedIn = localStorage.getItem("isLoggedIn");
 
   if (!isLoggedIn) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/admin/login" replace />;
   }
 
   return children;

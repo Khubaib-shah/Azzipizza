@@ -99,7 +99,7 @@ const Sidebar = () => {
             <X className="h-6 w-6 text-gray-700" />
           </button>
 
-          <nav className="flex-1 pt-10 pb-4 px-3 mt-16 md:mt-0">
+          <nav className="flex-1 pt-14 md:pt-3 pb-4 px-3">
             <ul className="space-y-1">
               {menuItems.map((item, index) => (
                 <li key={index}>

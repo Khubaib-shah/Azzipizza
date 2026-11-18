@@ -8,11 +8,13 @@ import ProductCard from "../components/cards/ProductsCard";
 import ProductCardSkeleton from "../components/cards/ProductCardSkeleton";
 import HeroSection from "../components/heroSection/HeroSection";
 import SectionHeader from "../components/SectionHeader";
-import { ChevronRight } from "lucide-react";
+
 import { RestaurantSchema, MenuSchema } from "../components/SchemaMarkup";
+import meetOurImg from "/whychooseus.webp";
 
 import useEmblaCarousel from 'embla-carousel-react'
 import Autoplay from 'embla-carousel-autoplay'
+import { ChevronRight } from "lucide-react";
 const testimonials = [
   {
     text: "Pizza arrived hot, crust perfect, and honestly exceeded my expectations completely. great",
@@ -262,19 +264,47 @@ function Landing() {
     }
   }, [items]);
 
+  useEffect(() => {
+    document.title = "Miglior Pizzeria e Fritti a Bologna | Azzipizza Asporto";
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement("meta");
+      metaDesc.setAttribute("name", "description");
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.setAttribute(
+      "content",
+      "Ordina la migliore pizza artigianale e fritti caldi da Azzipizza a Bologna, zona Centro Storico e Saragozza. Consegna a domicilio e asporto."
+    );
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-cream to-white">
-      <title>Miglior Pizzeria e Fritti a Bologna | Azzipizza Asporto</title>
-      <meta name="description" content="Ordina la migliore pizza artigianale e fritti caldi da Azzipizza a Bologna, zona Centro Storico e Saragozza. Consegna a domicilio e asporto." />
-      <link rel="canonical" href="https://azzipizza.it/" />
       <RestaurantSchema />
       <MenuSchema items={items} />
       {/* Hero Section */}
       <HeroSection />
 
-      {/* Search The Menu */}
+      {/* Search The Menu (non-sticky, scrolls normally) */}
+      <div className="md:container mx-auto px-2 pt-2 pb-1 sm:px-6 md:pt-3 md:pb-2">
+        <div className="relative group">
+          <FaSearch
+            size={18}
+            className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 text-red-500 group-focus-within:text-red-600 transition-colors z-10"
+          />
+          <input
+            type="text"
+            placeholder="Cerca pizze, fritti o categorie..."
+            className="pl-8 sm:pl-12 sm:pr-4 py-1.5 sm:py-3.5 w-full border-2 border-gray-100 rounded-2xl focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all bg-gray-50/50 hover:bg-white hover:border-red-200 text-gray-700 shadow-sm text-sm"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+      </div>
+
+      {/* Sticky Category Pills Bar */}
       <div ref={stickySentinelRef} className="h-0 w-full" />
-      <section className="sticky top-12 md:top-20 z-40  bg-transparent pointer-events-none">
+      <section className="sticky top-12 md:top-20 z-40 bg-transparent pointer-events-none">
         <div className="md:container mx-auto">
           <div>
             <div
@@ -285,63 +315,47 @@ function Landing() {
                 }`}
             >
               <div className="px-2 py-1 sm:px-6 md:py-2">
-                <div className="grid grid-cols-1 gap-px md:gap-2">
-                  <div className="relative group">
-                    <FaSearch
-                      size={18}
-                      className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 text-red-500 group-focus-within:text-red-600 transition-colors z-10"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Cerca pizze, fritti o categorie..."
-                      className="pl-8 sm:pl-12 sm:pr-4 py-1.5 sm:py-3.5 w-full border-2 border-gray-100 rounded-2xl focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all bg-gray-50/50 hover:bg-white hover:border-red-200 text-gray-700 shadow-sm text-sm"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <style>{`
+                <div className="flex items-center gap-2">
+                  <style>{`
                       .no-scrollbar::-webkit-scrollbar { display: none; }
                       .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
                     `}</style>
-                    <div
-                      ref={tabsContainerRef}
-                      className="flex-1 overflow-x-auto no-scrollbar scroll-smooth"
-                    >
-                      <div className="flex gap-3 whitespace-nowrap p-1">
-                        {landingTabs.map((tab) => (
-                          <button
-                            key={tab}
-                            id={`tab-${tab}`}
-                            onClick={() => handleLandingCategoryClick(tab)}
-                            className={`relative px-3 sm:px-5 py-2 text-xs sm:text-sm rounded-full uppercase whitespace-nowrap transition-colors outline-none ${activeCategory === tab
-                              ? "text-white border border-transparent"
-                              : "bg-white text-gray-700 border border-gray-200 hover:border-red-300 hover:text-red-600"
-                              }`}
-                            style={{ WebkitTapHighlightColor: "transparent" }}
-                          >
-                            {activeCategory === tab && (
-                              <motion.div
-                                layoutId="landing-active-pill"
-                                className="absolute inset-0 bg-gradient-to-r from-red-600 to-red-700 rounded-full shadow-lg -z-10"
-                                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                              />
-                            )}
-                            <span className="relative z-10">{landingTabLabels[tab] || tab}</span>
-                          </button>
-                        ))}
-                      </div>
+                  <div
+                    ref={tabsContainerRef}
+                    className="flex-1 overflow-x-auto no-scrollbar scroll-smooth"
+                  >
+                    <div className="flex gap-3 whitespace-nowrap p-1">
+                      {landingTabs.map((tab) => (
+                        <button
+                          key={tab}
+                          id={`tab-${tab}`}
+                          onClick={() => handleLandingCategoryClick(tab)}
+                          className={`relative px-3 sm:px-5 py-2 text-xs sm:text-sm rounded-full uppercase whitespace-nowrap transition-colors outline-none ${activeCategory === tab
+                            ? "text-white border border-transparent"
+                            : "bg-white text-gray-700 border border-gray-200 hover:border-red-300 hover:text-red-600"
+                            }`}
+                          style={{ WebkitTapHighlightColor: "transparent" }}
+                        >
+                          {activeCategory === tab && (
+                            <motion.div
+                              layoutId="landing-active-pill"
+                              className="absolute inset-0 bg-gradient-to-r from-red-600 to-red-700 rounded-full shadow-lg -z-10"
+                              transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                            />
+                          )}
+                          <span className="relative z-10">{landingTabLabels[tab] || tab}</span>
+                        </button>
+                      ))}
                     </div>
-
-                    <button
-                      onClick={() => setIsCategoryModalOpen(true)}
-                      className="p-2.5 sm:p-3 bg-white border border-gray-200 rounded-full text-gray-600 shadow-sm shrink-0 hover:text-red-600 hover:border-red-300 transition-colors"
-                      aria-label="View all categories"
-                    >
-                      <FaBars size={16} />
-                    </button>
                   </div>
+
+                  <button
+                    onClick={() => setIsCategoryModalOpen(true)}
+                    className="p-2.5 sm:p-3 bg-white border border-gray-200 rounded-full text-gray-600 shadow-sm shrink-0 hover:text-red-600 hover:border-red-300 transition-colors"
+                    aria-label="View all categories"
+                  >
+                    <FaBars size={16} />
+                  </button>
                 </div>
               </div>
             </div>
@@ -495,60 +509,93 @@ function Landing() {
       </section>
 
       {/* Why Choose Us Section */}
-      <section className="md:py-16 bg-gradient-to-br from-gray-50 to-white">
-        <div className="sm:container mx-auto px-2 md:px-4">
+      <section className="py-10 md:py-16 bg-[#FFFBF5] border-y border-amber-100/80">
+        <div className="sm:container mx-auto px-3 md:px-4">
           <SectionHeader
-            title="Perché Scegliere Azzipizza?"
-            subtitle="Scopri la differenza che fanno passione e qualità"
+            title="Why Choose Azzipizza?"
+            subtitle="Crafted daily in Bologna with patience, heat, and honest ingredients"
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-4 md:mb-8">
-            <div className="card-premium !p-4 md:p-8 text-start">
-              <div className="bg-red-100 size-14 md:size-20 rounded-full flex items-center justify-center mb-1 md:mb-4">
-                <FaFire className="text-red-600 size-7 md:size-10" />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-7 items-stretch mt-6">
+            {/* Left Brand Visual Card */}
+            <div className="lg:col-span-5 relative rounded-2xl overflow-hidden border border-amber-200/70 bg-stone-900 min-h-[280px] sm:min-h-[340px]">
+              <img
+                src={meetOurImg}
+                alt="Azzipizza artisan kitchen in Bologna"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/15" />
+
+              <div className="relative z-10 h-full flex flex-col justify-end p-5 sm:p-6">
+
+
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-300">
+                      Mica Pizza e Fichi
+                    </p>
+                    <h3 className="!text-2xl sm:!text-3xl font-['Playfair_Display'] font-bold !text-white leading-snug mt-1">
+                      Authentic dough, baked to order.
+                    </h3>
+                  </div>
+                </div>
               </div>
-              <h3 className="!text-lg md:text-2xl font-bold text-gray-800 mb-px md:mb-3">
-                Cottura Perfetta
-              </h3>
-              <p className="text-sm text-gray-600">
-                Cottura tradizionale per un sapore autentico e un impasto fragrante
-              </p>
             </div>
 
-            <div className="card-premium !p-4 md:p-8 text-start">
-              <div className="bg-green-100 size-14 md:size-20 rounded-full flex items-center justify-center ms-auto mb-1 md:mb-4">
-                <FaStar className="text-green-600 size-7 md:size-10" />
-              </div>
-              <h3 className="!text-lg md:text-2xl font-bold text-gray-800 mb-px md:mb-3">
-                Ingredienti di Prima Scelta
-              </h3>
-              <p className="text-sm text-gray-600">
-                Solo ingredienti freschi e selezionati ogni giorno per una qualità unica
-              </p>
-            </div>
+            {/* Right 2x2 Brand Pillars Grid (Static, no hover transform/scale) */}
+            <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {[
+                {
+                  num: "01",
+                  icon: FaFire,
+                  title: "Perfect Cooking",
+                  desc: "Traditional high-heat baking for an authentic flavour, crisp edges, and a fragrant crust.",
+                },
+                {
+                  num: "02",
+                  icon: FaStar,
+                  title: "First Choice Ingredients",
+                  desc: "Fresh toppings and Italian produce selected every day for consistent quality in every bite.",
+                },
+                {
+                  num: "03",
+                  icon: FaClock,
+                  title: "Long-Leavening Dough",
+                  desc: "Slow fermentation for a light, airy, and easily digestible pizza dough.",
+                },
+                {
+                  num: "04",
+                  icon: FaShippingFast,
+                  title: "Hot & Free Delivery",
+                  desc: "Delivered piping hot straight from our oven to your door, with free delivery on every order.",
+                },
+              ].map((pillar) => {
+                const Icon = pillar.icon;
+                return (
+                  <div
+                    key={pillar.num}
+                    className="bg-white rounded-2xl border border-amber-200/70 p-5 sm:p-6 flex flex-col justify-between"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="h-11 w-11 rounded-xl bg-red-50 border border-red-100 flex items-center justify-center text-[var(--color-primary)]">
+                        <Icon className="h-5 w-5" />
+                      </div>
+                      <span className="text-xs font-bold tracking-widest text-amber-600/80">
+                        {pillar.num}
+                      </span>
+                    </div>
 
-            <div className="card-premium !p-4 md:p-8 text-start">
-              <div className="bg-amber-100 size-14 md:size-20 rounded-full flex items-center justify-center mb-1 md:mb-4">
-                <FaClock className="text-amber-600 size-7 md:size-10" />
-              </div>
-              <h3 className="!text-lg md:text-2xl font-bold text-gray-800 mb-px md:mb-3">
-                Impasto a Lunga Lievitazione
-              </h3>
-              <p className="text-sm text-gray-600">
-                Lunga lievitazione per una pizza leggera, digeribile e incredibilmente gustosa
-              </p>
-            </div>
-
-            <div className="card-premium !p-4 md:p-8 text-start">
-              <div className="bg-blue-100 size-14 md:size-20 rounded-full flex items-center justify-center ms-auto mb-1 md:mb-4">
-                <FaShippingFast className="text-blue-600 size-7 md:size-10" />
-              </div>
-              <h3 className="!text-lg md:text-2xl font-bold text-gray-800 mb-px md:mb-3">
-                Consegna Veloce
-              </h3>
-              <p className="text-sm text-gray-600">
-                Calda e appena sfornata - consegna gratuita per ordini sopra i 20€
-              </p>
+                    <div>
+                      <h3 className="!text-lg sm:!text-xl font-['Playfair_Display'] font-bold text-slate-900 mb-1.5">
+                        {pillar.title}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                        {pillar.desc}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -558,12 +605,11 @@ function Landing() {
       <section className="py-4 md:py-16 bg-gradient-to-br from-amber-50 to-red-50">
         <div className="sm:container mx-auto px-2 md:px-4">
           <SectionHeader
-            title="What Our Customers Say"
-            subtitle="Don't just take our word for it"
+            title="Happy Customers"
           />
 
           {/* EMBLA */}
-          <div className="pt-8 lg:pt-12 px-6 overflow-x-hidden" ref={emblaRef}>
+          <div className="pt-16 pb-10 px-6 overflow-hidden" ref={emblaRef}>
             <div className="flex">
 
               {testimonials.map((t, i) => (
@@ -656,7 +702,7 @@ function Landing() {
       </section>
 
       <Transition show={isCategoryModalOpen} as={Fragment}>
-        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center p-0 sm:p-4">
           <Transition.Child
             as={Fragment}
             enter="transition-opacity duration-300"
@@ -688,7 +734,7 @@ function Landing() {
                   <FaTimes size={18} />
                 </button>
               </div>
-              <div className="overflow-y-auto p-4 flex flex-col gap-2 pb-8">
+              <div className="overflow-y-auto p-4 flex flex-col gap-2 pb-[calc(5rem+env(safe-area-inset-bottom))] sm:pb-6">
                 {landingTabs.map((tab) => (
                   <button
                     key={tab}

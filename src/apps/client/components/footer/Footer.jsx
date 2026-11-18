@@ -41,19 +41,19 @@ function Footer() {
                 href="https://www.instagram.com/azzipizzamicapizzaefichi"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-red-600 p-3 rounded-lg hover:scale-110 transition-transform shadow-lg text-white"
+                className="p-2 rounded-lg text-gray-600 hover:text-gray-900 transition-colors"
                 aria-label="Instagram"
               >
-                <FaInstagram size={20} />
+                <FaInstagram size={22} />
               </a>
               <a
                 href="https://wa.me/393713985810"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-green-500 p-3 rounded-lg hover:scale-110 transition-transform shadow-lg text-white"
+                className="p-2 rounded-lg text-gray-600 hover:text-gray-900 transition-colors"
                 aria-label="WhatsApp"
               >
-                <FaWhatsapp size={20} />
+                <FaWhatsapp size={22} />
               </a>
             </div>
           </div>

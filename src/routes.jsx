@@ -21,8 +21,12 @@ const PaymentCancelled = lazy(
   () => import("./apps/client/components/paymentPages/PaymentCancelled"),
 );
 const CategoryPage = lazy(() => import("./apps/client/pages/CategoryPage"));
+
+const Checkout = lazy(() => import("./apps/client/pages/Checkout"));
+
 const PrivacyPolicy = lazy(() => import("./apps/client/pages/PrivacyPolicy"));
 const TermsOfService = lazy(() => import("./apps/client/pages/TermsOfService"));
+
 
 // Admin App Components
 import AdminProtectedRoute from "./apps/admin/components/ProtectedRoute";
@@ -56,6 +60,8 @@ const router = createBrowserRouter([
       { path: "terms-of-service", element: <TermsOfService /> },
       { path: "cart", element: <Cart /> },
       { path: "ordina", element: <Cart /> },
+      { path: "checkout", element: <Checkout /> },
+      { path: "cassa", element: <Checkout /> },
       { path: "order-success/:orderId", element: <OrderSuccess /> },
       { path: "payment-success", element: <PaymentSuccess /> },
       { path: "payment-error", element: <PaymentError /> },
@@ -76,7 +82,7 @@ const router = createBrowserRouter([
     path: "/admin",
     element: (
       <AdminProtectedRoute>
-        <div className="admin-theme">
+        <div className="admin-theme w-full">
           <AdminLayout />
         </div>
       </AdminProtectedRoute>

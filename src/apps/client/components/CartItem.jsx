@@ -1,114 +1,117 @@
 import React from "react";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { Button } from "@shared/components/ui/button";
+import {
+  calculateDiscountedPrice,
+  normalizeDiscountPercent,
+} from "@shared/utils/pricing";
 
 const CartItem = ({ item, onQuantityChange, onRemove }) => {
   const itemTotal = item.price * item.quantity;
+  const discount = normalizeDiscountPercent(item.discount);
+  const originalPrice = Number(item.originalPrice);
+  const hasOriginalPrice =
+    item.originalPrice != null && Number.isFinite(originalPrice);
 
   return (
-    <div className="card-premium p-2 sm:p-6 flex flex-col sm:flex-row gap-2 sm:gap-6 relative group bg-white">
-      <div className="w-full sm:w-36 h-36 flex-shrink-0 overflow-hidden rounded-[var(--radius-md)] shadow-xs md:shadow-sm relative">
+    <article className="group flex gap-3 bg-white p-3 transition-colors hover:bg-amber-50/30 sm:gap-4 sm:p-4">
+      <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-amber-50 sm:h-24 sm:w-24">
         <img
           src={item.image}
           alt={item.name}
-          className="w-full h-full object-cover transition-transform duration-500 lg:group-hover:scale-110"
+          className="h-full w-full object-cover transition-transform duration-500 lg:group-hover:scale-105"
         />
-        {item.discount > 0 && (
-          <div className="absolute top-2 left-2 bg-[var(--color-basil)] text-white text-xs font-bold px-2 py-1 rounded-full shadow-sm">
-            {item.discount}% OFF
+        {discount > 0 && (
+          <div className="absolute left-2 top-2 rounded-full bg-[var(--color-basil)] px-2 py-1 text-[10px] font-bold text-white shadow-sm sm:text-xs">
+            -{discount}% OFF
           </div>
         )}
       </div>
-      <div className="flex-grow flex flex-col justify-between">
-        <div>
-          <div className="flex justify-between items-start mb-2">
-            <h3 className="font-['Playfair_Display'] !text-lg md:!text-xl font-bold text-[var(--color-text)] leading-tight">
+      <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <h3 className="break-words font-['Playfair_Display'] !text-base font-bold leading-tight text-[var(--color-text)] sm:!text-lg">
               {item.name}
             </h3>
-            <div className="text-right flex flex-col items-end">
-              <p className="font-['Playfair_Display'] !text-md md:!text-xl font-bold text-[var(--color-primary)]">
-                €{itemTotal.toFixed(2)}
+            {discount > 0 && hasOriginalPrice ? (
+              <p className="mt-1 flex flex-wrap items-center gap-x-1 text-xs text-[var(--color-text-light)] sm:text-sm">
+                <span className="line-through">€{originalPrice.toFixed(2)}</span>
+                <span aria-hidden="true">→</span>
+                <span className="font-semibold text-[var(--color-primary)]">
+                  €{calculateDiscountedPrice(originalPrice, discount).toFixed(2)} (-{discount}%)
+                </span>
               </p>
-              {item.originalPrice && item.originalPrice > item.price && (
-                <p className="text-sm text-[var(--color-text-lighter)] line-through">
-                  €{(item.originalPrice * item.quantity).toFixed(2)}
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div className="text-sm text-[var(--color-text-light)] font-['Poppins'] mb-3 flex items-center gap-2">
-            <span className="bg-[var(--color-background)] px-2 py-0.5 rounded text-xs border border-[var(--color-cream)]">
-              €{item.price.toFixed(2)} each
-            </span>
-          </div>
-
-          {item.selectedIngredients?.length > 0 && (
-            <div className="mt-3 p-3 bg-[var(--color-background)] rounded-[var(--radius-sm)] border border-[var(--color-cream)]">
-              <p className="!text-[10px] md:text-xs font-semibold text-[var(--color-text-light)] uppercase tracking-wider mb-1 md:mb-2 flex items-center gap-1">
-                <Plus size={10} /> Extras
+            ) : (
+              <p className="mt-1 text-xs text-[var(--color-text-light)] sm:text-sm">
+                €{item.price.toFixed(2)} per pizza
               </p>
-              <ul className="space-y-px md:space-y-1">
-                {item.selectedIngredients.map((ing, i) => (
-                  <li
-                    key={i}
-                    className="flex justify-between text-xs md:text-sm text-[var(--color-text)]"
-                  >
-                    <span>{ing.name}</span>
-                    <span className="font-medium text-[var(--color-accent-dark)]">
-                      +€{(ing.price * item.quantity).toFixed(2)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+            )}
+          </div>
+          <div className="shrink-0 text-right">
+            <p className="text-[10px] font-medium uppercase tracking-wide text-[var(--color-text-lighter)] sm:text-xs">
+              Item total
+            </p>
+            <p className="font-['Playfair_Display'] text-base font-bold text-[var(--color-primary)] sm:text-lg">
+              €{itemTotal.toFixed(2)}
+            </p>
+          </div>
         </div>
 
-        <div className="flex items-center justify-between md:!mt-4 border-t border-gray-50 pt-2 md:pt-4">
-          <div className="flex items-center bg-[var(--color-background)] rounded-full border border-[var(--color-cream)] p-1 shadow-inner">
+        {item.selectedIngredients?.length > 0 && (
+          <ul className="mt-2 space-y-1">
+            {item.selectedIngredients.map((ingredient) => (
+              <li
+                key={ingredient._id || ingredient.name}
+                className="flex flex-wrap items-baseline justify-between gap-x-2 text-xs text-[var(--color-text-light)] sm:text-sm"
+              >
+                <span>{ingredient.name}</span>
+                <span className="font-medium text-[var(--color-accent-dark)]">
+                  €{((Math.round(ingredient.price * 100) * item.quantity) / 100).toFixed(2)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+        {item.customizations && (
+          <p className="mt-2 text-xs text-[var(--color-text-light)]">
+            <span className="font-semibold text-[var(--color-text)]">Note:</span>{" "}
+            {item.customizations}
+          </p>
+        )}
+
+        <div className="mt-auto flex items-center justify-between gap-3 pt-3">
+          <div className="inline-flex items-center rounded-full border border-amber-200 bg-[var(--color-background)] p-1">
             <Button
               onClick={() => onQuantityChange(item, "decrease")}
-              className="w-8 h-8 flex items-center justify-center rounded-full bg-white text-[var(--color-text)] hover:bg-[var(--color-primary-light)] hover:text-white transition-colors disabled:opacity-50 disabled:hover:bg-white disabled:hover:text-[var(--color-text)] shadow-sm border-none p-0 cursor-pointer"
+              aria-label={`Decrease ${item.name} quantity`}
+              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-none bg-white p-0 text-[var(--color-text)] shadow-sm transition-colors hover:bg-[var(--color-primary-light)] hover:text-white disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white disabled:hover:text-[var(--color-text)]"
               disabled={item.quantity <= 1}
             >
               <Minus size={14} />
             </Button>
-            <span className="w-10 text-center font-semibold text-[var(--color-text)]">
+            <span aria-live="polite" className="w-9 text-center text-sm font-semibold text-[var(--color-text)]">
               {item.quantity}
             </span>
             <Button
               onClick={() => onQuantityChange(item, "increase")}
-              className="w-8 h-8 flex items-center justify-center rounded-full bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-dark)] transition-colors shadow-sm shadow-[var(--color-accent)]/30 border-none p-0 cursor-pointer"
+              aria-label={`Increase ${item.name} quantity`}
+              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-none bg-[var(--color-accent)] p-0 text-white shadow-sm transition-colors hover:bg-[var(--color-accent-dark)]"
             >
               <Plus size={14} />
             </Button>
           </div>
           <Button
-            onClick={() => onRemove(item._id)}
+            onClick={() => onRemove(item)}
             aria-label="Remove item from cart"
-            className="
-              flex items-center justify-center gap-2
-              rounded-full border-none
-              bg-[var(--color-primary)] text-white
-              hover:bg-[var(--color-accent-dark)]
-              transition-colors shadow-sm shadow-[var(--color-accent)]/30
-              w-8 h-8 p-0
-              md:w-auto md:h-10 md:px-4
-            "
+            title={`Remove ${item.name}`}
+            className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-red-100 bg-white p-0 text-[var(--color-primary)] transition-colors hover:border-[var(--color-primary)] hover:bg-red-50 sm:h-10 sm:w-auto sm:gap-2 sm:px-4"
           >
-            <Trash2
-              size={16}
-              className="transition-transform group-hover:scale-110"
-            />
-
-            <span className="hidden md:block">
-              Remove
-            </span>
+            <Trash2 size={16} />
+            <span className="hidden text-sm font-medium sm:block">Remove</span>
           </Button>
         </div>
       </div>
-    </div>
+    </article>
   );
 };
 

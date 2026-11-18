@@ -21,8 +21,8 @@ export default defineConfig({
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui-vendor': ['@mui/material', '@mui/icons-material', '@emotion/react', '@emotion/styled'],
-          'radix-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
+          'radix-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-select', '@radix-ui/react-tabs'],
+          'charts': ['recharts'],
           'icons': ['react-icons', 'lucide-react'],
         },
       },

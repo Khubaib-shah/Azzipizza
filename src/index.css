@@ -221,4 +221,19 @@
   .animate-scale-in {
     animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(180, 83, 9, 0.2);
+    border-radius: 9999px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(180, 83, 9, 0.4);
+  }
 }

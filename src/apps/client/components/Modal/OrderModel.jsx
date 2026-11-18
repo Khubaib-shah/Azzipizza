@@ -6,6 +6,7 @@ import { PaymentModal } from "../PaymentOptionButtons";
 import { baseUri } from "@shared/config/api";
 import { saveOrderToLocalStorage } from "@shared/utils/SavedOrderSucces";
 import { useRestaurantStatus } from "@shared/utils/useRestaurantStatus";
+import { calculateCartPricing } from "@shared/utils/pricing";
 import {
   User,
   Phone,
@@ -19,28 +20,40 @@ import {
 } from "lucide-react";
 
 // InputField defined outside to prevent re-renders losing focus
-const InputField = ({ icon: Icon, name, placeholder, value, onChange, error, type = "text", className = "", ...props }) => (
-  <div className={`relative group ${className}`}>
-    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors group-focus-within:text-gray-800">
-      <Icon size={18} className="text-gray-400 group-focus-within:text-gray-800" />
+const InputField = ({ icon: Icon, name, label, placeholder, value, onChange, error, type = "text", className = "", ...props }) => (
+  <div className={className}>
+    <label htmlFor={name} className="mb-1.5 block text-xs font-semibold text-slate-700">
+      {label}
+    </label>
+    <div className="relative group">
+      <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none transition-colors group-focus-within:text-[var(--color-primary)]">
+        <Icon size={17} className="text-gray-400 group-focus-within:text-[var(--color-primary)]" />
+      </div>
+      <input
+        id={name}
+        type={type}
+        name={name}
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        aria-invalid={Boolean(error)}
+        aria-describedby={error ? `${name}-error` : undefined}
+        className={`w-full rounded-xl border bg-white py-3 pl-11 pr-4 text-sm text-gray-800 placeholder-gray-400 transition-all focus:ring-2 focus:ring-amber-100 ${error
+          ? "border-red-300 bg-red-50 focus:border-red-500"
+          : "border-gray-200 focus:border-[var(--color-primary)] hover:border-gray-300"
+          }`}
+        {...props}
+      />
     </div>
-    <input
-      type={type}
-      name={name}
-      placeholder={placeholder}
-      value={value}
-      onChange={onChange}
-      className={`w-full pl-11 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-full text-sm text-gray-800 placeholder-gray-400 focus:bg-white focus:ring-0 transition-all ${error
-        ? "border-red-300 focus:border-red-500 bg-red-50 text-red-900"
-        : "focus:border-gray-800 hover:border-gray-300"
-        }`}
-      {...props}
-    />
-    {error && <span className="absolute right-2 -bottom-3 text-[10px] text-red-500 font-medium whitespace-nowrap">{error}</span>}
+    {error && (
+      <p id={`${name}-error`} role="alert" className="mt-1 text-xs font-medium text-red-600">
+        {error}
+      </p>
+    )}
   </div>
 );
 
-function OrderModal({ isOpen, closeModal, totalPrice, cartItems }) {
+function OrderModal({ isOpen, closeModal, cartItems }) {
   const [formData, setFormData] = useState({
     name: "",
     phoneNumber: "",
@@ -57,6 +70,8 @@ function OrderModal({ isOpen, closeModal, totalPrice, cartItems }) {
   const [formErrors, setFormErrors] = useState({});
   const [isTime, setIsTime] = useState(false);
   const navigate = useNavigate();
+  const totalItemCount = cartItems.reduce((count, item) => count + item.quantity, 0);
+  const pricing = useMemo(() => calculateCartPricing(cartItems), [cartItems]);
 
   useEffect(() => {
     if (isOpen) {
@@ -218,7 +233,7 @@ function OrderModal({ isOpen, closeModal, totalPrice, cartItems }) {
       doorbellName: formData.doorbellName,
       deliveryTime: formData.deliveryTime,
       paymentMethod: method,
-      total: Number(totalPrice.toFixed(2)),
+      total: Number(pricing.total.toFixed(2)),
       customizations: formData.customizations || "",
     };
 
@@ -277,7 +292,7 @@ function OrderModal({ isOpen, closeModal, totalPrice, cartItems }) {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={closeModal} className="max-w-4xl !p-0">
+    <Modal isOpen={isOpen} onClose={closeModal} className="max-w-5xl !overflow-hidden !p-0">
       {!isTime ? (
         <div className="text-center py-20 px-8 flex flex-col items-center">
           <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-8 animate-bounce">
@@ -297,25 +312,44 @@ function OrderModal({ isOpen, closeModal, totalPrice, cartItems }) {
           </button>
         </div>
       ) : (
-        <div className="flex flex-col lg:flex-row h-full font-['Poppins'] overflow-hidden">
-          <div className="flex-1 p-6 lg:p-10 overflow-y-auto max-h-[85vh] hide-scrollbar bg-white rounded-t-3xl lg:rounded-l-3xl lg:rounded-tr-none">
-            <div className="mb-8 flex items-baseline gap-4">
-              <h2 className="!text-4xl lg:text-5xl !font-black text-slate-800 font-serif tracking-tight">
-                Checkout
+        <div className="flex max-h-[95vh] flex-col overflow-y-auto font-['Poppins'] lg:max-h-[90vh] lg:flex-row lg:overflow-hidden">
+          <div className="min-w-0 flex-1 bg-white p-5 sm:p-7 lg:max-h-[90vh] lg:overflow-y-auto lg:p-9">
+            <div className="mb-7 border-b border-amber-100 pb-5 pr-10">
+              <p className="mb-1 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-accent-dark)]">
+                Secure checkout
+              </p>
+              <h2 className="!mb-1 !text-3xl font-bold text-slate-900 sm:!text-4xl">
+                Delivery details
               </h2>
-              <span className="text-sm font-medium text-slate-400">Fill details</span>
+              <p className="text-sm text-slate-500">
+                Add your details and choose how you’d like to pay.
+              </p>
+              <ol aria-label="Checkout steps" className="mt-5 grid grid-cols-3 gap-2">
+                {["Contact", "Delivery", "Payment"].map((step, index) => (
+                  <li key={step} className="flex items-center gap-2 text-xs font-medium text-slate-600 sm:text-sm">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-50 text-[var(--color-accent-dark)]">
+                      {index + 1}
+                    </span>
+                    {step}
+                  </li>
+                ))}
+              </ol>
             </div>
 
-            <div className="space-y-4">
-              <section className="space-y-4">
-                <h3 className="!text-2xl font-black text-slate-800 font-serif tracking-widest flex items-center gap-3">
-                  <User size={20} className="text-slate-600" /> CONTACT
+            <div className="space-y-5">
+              <section className="rounded-2xl border border-gray-100 bg-white p-4 sm:p-5">
+                <h3 className="mb-4 flex items-center gap-3 !text-base font-bold text-slate-900 sm:!text-lg">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-50 text-[var(--color-primary)]">
+                    <User size={18} />
+                  </span>
+                  Contact information
                 </h3>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <InputField
                     icon={User}
                     name="name"
-                    placeholder="Full Name"
+                    label="Full name"
+                    placeholder="e.g. Mario Rossi"
                     value={formData.name}
                     onChange={handleChange}
                     error={formErrors.name}
@@ -323,8 +357,9 @@ function OrderModal({ isOpen, closeModal, totalPrice, cartItems }) {
                   <InputField
                     icon={Phone}
                     name="phoneNumber"
+                    label="Phone number"
                     type="tel"
-                    placeholder="WhatsApp No."
+                    placeholder="Your contact number"
                     value={formData.phoneNumber}
                     onChange={handleChange}
                     onKeyDown={handleKeyDownNumbers}
@@ -333,36 +368,28 @@ function OrderModal({ isOpen, closeModal, totalPrice, cartItems }) {
                 </div>
               </section>
 
-              <section className="space-y-4 pt-6">
-                <h3 className="!text-2xl font-black text-slate-800 font-serif tracking-widest flex items-center gap-3">
-                  <MapPin size={20} className="text-slate-600" /> DELIVERY ADDRESS
+              <section className="rounded-2xl border border-gray-100 bg-white p-4 sm:p-5">
+                <h3 className="mb-4 flex items-center gap-3 !text-base font-bold text-slate-900 sm:!text-lg">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-50 text-[var(--color-primary)]">
+                    <MapPin size={18} />
+                  </span>
+                  Delivery address
                 </h3>
-                <div className="space-y-3">
-                  <div className="grid grid-cols-7 gap-3">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <InputField
                       icon={MapPin}
                       name="street"
-                      placeholder="Street Address"
+                      label="Street address"
+                      placeholder="Street and house number"
                       value={formData.street}
                       onChange={handleChange}
                       error={formErrors.street}
-                      className="col-span-4"
+                      className="sm:col-span-2"
                     />
                     <InputField
                       icon={Building}
                       name="city"
-                      placeholder="City"
-                      value={formData.city}
-                      onChange={handleChange}
-                      error={formErrors.city}
-                      className="col-span-3"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-3">
-                    <InputField
-                      icon={Building}
-                      name="city"
+                      label="City"
                       placeholder="City"
                       value={formData.city}
                       onChange={handleChange}
@@ -371,8 +398,9 @@ function OrderModal({ isOpen, closeModal, totalPrice, cartItems }) {
                     <InputField
                       icon={MapPin}
                       name="zipCode"
+                      label="Postcode"
                       type="number"
-                      placeholder="ZIP"
+                      placeholder="Postcode"
                       value={formData.zipCode}
                       onChange={handleChange}
                       onKeyDown={handleKeyDownNumbers}
@@ -381,47 +409,65 @@ function OrderModal({ isOpen, closeModal, totalPrice, cartItems }) {
                     <InputField
                       icon={User}
                       name="doorbellName"
-                      placeholder="Doorbell"
+                      label="Name on doorbell"
+                      placeholder="Name shown on the bell"
                       value={formData.doorbellName}
                       onChange={handleChange}
                       error={formErrors.doorbellName}
+                      className="sm:col-span-2"
                     />
-                  </div>
                 </div>
               </section>
 
-              <section className="space-y-4 pt-6">
-                <h3 className="!text-2xl font-black text-slate-800 font-serif tracking-widest flex items-center gap-3">
-                  <Clock size={20} className="text-slate-600" /> TIME & NOTES
+              <section className="rounded-2xl border border-gray-100 bg-white p-4 sm:p-5">
+                <h3 className="mb-4 flex items-center gap-3 !text-base font-bold text-slate-900 sm:!text-lg">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-50 text-[var(--color-primary)]">
+                    <Clock size={18} />
+                  </span>
+                  Delivery time & notes
                 </h3>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="col-span-2 relative group">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-gray-800">
-                      <Clock size={18} />
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <label htmlFor="deliveryTime" className="mb-1.5 block text-xs font-semibold text-slate-700">
+                      Preferred delivery time
+                    </label>
+                    <div className="relative group">
+                      <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400 group-focus-within:text-[var(--color-primary)]">
+                        <Clock size={17} />
+                      </div>
+                      <input
+                        id="deliveryTime"
+                        type="time"
+                        name="deliveryTime"
+                        value={formData.deliveryTime}
+                        onChange={handleChange}
+                        aria-invalid={Boolean(formErrors.deliveryTime)}
+                        aria-describedby={formErrors.deliveryTime ? "deliveryTime-error" : undefined}
+                        className={`w-full rounded-xl border bg-white py-3 pl-11 pr-3 text-sm text-gray-800 transition-all focus:ring-2 focus:ring-amber-100 ${formErrors.deliveryTime
+                          ? "border-red-300 bg-red-50 focus:border-red-500"
+                          : "border-gray-200 focus:border-[var(--color-primary)] hover:border-gray-300"
+                          }`}
+                      />
                     </div>
-                    <input
-                      type="time"
-                      name="deliveryTime"
-                      value={formData.deliveryTime}
-                      onChange={handleChange}
-                      className={`w-full pl-11 pr-2 py-3 bg-gray-50/50 border border-gray-200 rounded-full text-sm text-gray-800 transition-all ${formErrors.deliveryTime
-                        ? "border-red-300 focus:border-red-500 bg-red-50"
-                        : "focus:border-gray-800 hover:border-gray-300"
-                        }`}
-                    />
+                    {formErrors.deliveryTime && (
+                      <p id="deliveryTime-error" role="alert" className="mt-1 text-xs font-medium text-red-600">
+                        Choose a time at least 35 minutes from now.
+                      </p>
+                    )}
                   </div>
 
-                  <div className="col-span-2 relative group flex">
-                    <div className="absolute top-3.5 left-4 pointer-events-none text-gray-400 group-focus-within:text-gray-800">
-                      <StickyNote size={18} />
-                    </div>
+                  <div>
+                    <label htmlFor="customizations" className="mb-1.5 block text-xs font-semibold text-slate-700">
+                      Order notes <span className="font-normal text-slate-400">(optional)</span>
+                    </label>
                     <textarea
+                      id="customizations"
                       name="customizations"
-                      placeholder="Notes (buzzer, allergies...)"
+                      placeholder="Allergies, delivery instructions, or anything else we should know"
                       value={formData.customizations}
                       onChange={handleChange}
-                      className="w-full pl-11 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-3xl text-sm placeholder-gray-400 focus:bg-white focus:border-gray-800 focus:ring-0 hover:border-gray-300 transition-all min-h-[46px] resize-none"
-                      rows="2"
+                      className="min-h-24 w-full resize-y rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-800 placeholder-gray-400 transition-all hover:border-gray-300 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-amber-100"
+                      rows="3"
                     />
                   </div>
                 </div>
@@ -438,37 +484,96 @@ function OrderModal({ isOpen, closeModal, totalPrice, cartItems }) {
             </div>
           </div>
           {/* Right Column: Order Summary & Payment */}
-          <div className="w-full lg:w-[380px] bg-red-50/50 p-6 lg:p-10 flex flex-col justify-between rounded-b-none lg:rounded-bl-none lg:rounded-r-[2rem] border-t lg:border-t-0 lg:border-l border-red-100">
-            <div className="mb-8">
-              <h3 className="text-3xl font-black font-serif text-slate-800 mb-2 md:mb-6 flex items-center gap-3 tracking-tight">
+          <div className="flex w-full shrink-0 flex-col justify-between overflow-y-auto border-t border-red-100 bg-red-50/50 p-5 sm:p-6 lg:max-h-[90vh] lg:w-[380px] lg:border-l lg:border-t-0 lg:rounded-r-[2rem] lg:p-8">
+            <div className="mb-5 lg:mb-8">
+              <h3 className="text-2xl sm:text-3xl font-black font-serif text-slate-800 mb-3 md:mb-6 flex items-center gap-3 tracking-tight">
                 <ShoppingBag size={24} className="text-red-500" />
                 Summary
               </h3>
 
-              <div className="bg-white p-5 rounded-lg shadow-sm border border-red-50/50 text-base">
-                <div className="flex justify-between items-center text-slate-600 mb-1 md:mb-3">
-                  <span>Items ({cartItems.length})</span>
-                  <span>€{totalPrice.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between items-center text-slate-600 mb-1 md:mb-4">
-                  <span>Delivery</span>
-                  <span className="text-green-600 font-bold">Free</span>
-                </div>
-                <div className="border-t border-dashed border-gray-200 pt-2 md:pt-4 flex justify-between items-end">
-                  <span className="font-bold text-slate-800 text-lg">Total</span>
-                  <span className="text-2xl font-bold text-red-600 font-serif">
-                    €{totalPrice.toFixed(2)}
-                  </span>
+              <div className="rounded-2xl border border-amber-100 bg-white p-4 shadow-sm sm:p-5">
+                <ul className="mb-4 max-h-44 space-y-3 overflow-y-auto border-b border-dashed border-amber-100 pb-4">
+                  {cartItems.map((item, index) => (
+                    <li
+                      key={`${item._id}-${(item.selectedIngredients || []).map((ingredient) => ingredient.name).sort().join(",")}-${item.customizations || ""}-${index}`}
+                      className="flex items-start justify-between gap-3 text-sm"
+                    >
+                      <div className="flex min-w-0 gap-2">
+                        <span className="shrink-0 rounded-md bg-amber-50 px-2 py-0.5 text-xs font-semibold text-[var(--color-accent-dark)]">
+                          {item.quantity}×
+                        </span>
+                        <div className="min-w-0">
+                          <p className="break-words font-medium leading-5 text-slate-800">
+                            {item.name}
+                          </p>
+                          {item.selectedIngredients?.length > 0 && (
+                            <ul className="mt-1 space-y-0.5">
+                              {item.selectedIngredients.map((ingredient) => (
+                                <li
+                                  key={ingredient._id || ingredient.name}
+                                  className="flex flex-wrap justify-between gap-x-2 text-xs leading-4 text-slate-500"
+                                >
+                                  <span>{ingredient.name}</span>
+                                  <span>
+                                    €{ingredient.price.toFixed(2)} × {item.quantity} = €{(ingredient.price * item.quantity).toFixed(2)}
+                                  </span>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      </div>
+                      <span className="shrink-0 font-medium text-slate-700">
+                        €{(item.price * item.quantity).toFixed(2)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between gap-3 text-slate-600">
+                    <span>
+                      Products · {totalItemCount} {totalItemCount === 1 ? "item" : "items"}
+                    </span>
+                    <span>€{pricing.productSubtotal.toFixed(2)}</span>
+                  </div>
+                  {pricing.extrasTotal > 0 && (
+                    <div className="flex justify-between gap-3 text-slate-600">
+                      <span>Extras</span>
+                      <span>€{pricing.extrasTotal.toFixed(2)}</span>
+                    </div>
+                  )}
+                  {pricing.discount > 0 && (
+                    <div className="flex justify-between gap-3 text-[var(--color-basil)]">
+                      <span>Offers</span>
+                      <span className="font-semibold">−€{pricing.discount.toFixed(2)}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between gap-3 text-slate-600">
+                    <span>Delivery</span>
+                    <span className="font-semibold text-[var(--color-basil)]">Free</span>
+                  </div>
+                  <div className="flex items-end justify-between gap-3 border-t border-gray-100 pt-3">
+                    <span className="font-semibold text-slate-900">Total</span>
+                    <span className="font-['Playfair_Display'] text-2xl font-bold text-[var(--color-primary)]">
+                      €{pricing.total.toFixed(2)}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="space-y-4 mt-auto">
-              <h4 className="font-bold text-slate-800 text-sm flex mb-2 items-center justify-center gap-2">
-                <CreditCard size={18} className="text-slate-600" /> Payment
-              </h4>
+            <div className="mt-auto space-y-3">
+              <div>
+                <h4 className="flex items-center gap-2 font-bold text-slate-900">
+                  <CreditCard size={18} className="text-[var(--color-primary)]" />
+                  Payment method
+                </h4>
+                <p className="mt-1 text-xs text-slate-500">
+                  Choose your preferred way to pay.
+                </p>
+              </div>
               <PaymentModal
-                totalPrice={totalPrice}
+                totalPrice={pricing.total}
                 isSubmitting={isSubmitting}
                 handleOrderSubmit={handleOrderSubmit}
                 isFormValid={isFormValid}
